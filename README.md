@@ -1,2 +1,2 @@
-# betting-crawler
-Spring BettingCrawler Sample Application
+# Spring BettingCrawler Sample Application
+
