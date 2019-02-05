@@ -20,19 +20,15 @@ Password:
 ```
 
 
-![game-data](https://user-images.githubusercontent.com/23057170/52271908-b6f15280-294d-11e9-85fe-73afa8ee23b2.png)
+![h2 console-game-small](https://user-images.githubusercontent.com/23057170/52274230-b27c6800-2954-11e9-9cfb-8ecec86fc9bd.png)
 
 *Game data*
 
-
-
-![bet-data](https://user-images.githubusercontent.com/23057170/52272125-6f1efb00-294e-11e9-8722-f582f0c65736.png)
+![h2 console-bet-small](https://user-images.githubusercontent.com/23057170/52274387-33d3fa80-2955-11e9-80ec-aaa933572518.png)
 
 *Bet data*
 
-
-
-![football-bet-data](https://user-images.githubusercontent.com/23057170/52272101-5f071b80-294e-11e9-8b81-4a47ae4254cd.png)
+![h2 console--football-bet-small](https://user-images.githubusercontent.com/23057170/52274391-35052780-2955-11e9-9550-b6d563fbf7ff.png)
 
 *Football Bet data*
 
