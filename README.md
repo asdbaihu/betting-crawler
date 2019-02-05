@@ -27,7 +27,7 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 ```
 
 ## Screenshots
-Sample data created by Betting Crawler. Screenshots captured from H2 database viewer
+Sample data created by Betting Crawler
 
 ![ScreenShot](https://user-images.githubusercontent.com/23057170/52274230-b27c6800-2954-11e9-9cfb-8ecec86fc9bd.png)
 
