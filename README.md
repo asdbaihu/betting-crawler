@@ -11,7 +11,13 @@ cd betting-crawler
 java -jar target/*.jar
 ```
 
-You can then access the embedded database here: http://localhost:8080/h2-console
+You can then access the embedded database here: http://localhost:8080/h2-console using the credentials
+
+```
+JDBC URL: jdbc:h2~/betting_crawler
+Usename:  sa
+Password: 
+```
 
 <img width="512" alt="bettingcrawler-screenshot" src="https://user-images.githubusercontent.com/23057170/52229774-65e64d80-28be-11e9-9f7b-0bdc2712c8d0.png">
 
