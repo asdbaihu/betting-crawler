@@ -20,24 +20,20 @@ Password:
 ```
 
 
-![h2 console-game-small](https://user-images.githubusercontent.com/23057170/52274230-b27c6800-2954-11e9-9cfb-8ecec86fc9bd.png)
-
-*Game data*
-
-![h2 console-bet-small](https://user-images.githubusercontent.com/23057170/52274387-33d3fa80-2955-11e9-80ec-aaa933572518.png)
-
-*Bet data*
-
-![h2 console--football-bet-small](https://user-images.githubusercontent.com/23057170/52274391-35052780-2955-11e9-9550-b6d563fbf7ff.png)
-
-*Football Bet data*
-
-
 Or you can run it from Maven directly using the Spring Boot Maven plugin. If you do this it will pick up changes that you make in the project immediately (changes to Java source files require a compile as well - most people use an IDE for this):
 
 ```
 ./mvnw spring-boot:run
 ```
+
+## Screenshots
+Sample data created by Betting Crawler. Screenshots captured from H2 database viewer
+
+![ScreenShot](https://user-images.githubusercontent.com/23057170/52274230-b27c6800-2954-11e9-9cfb-8ecec86fc9bd.png)
+
+![ScreenShot](https://user-images.githubusercontent.com/23057170/52274387-33d3fa80-2955-11e9-80ec-aaa933572518.png)
+
+![ScreenShot](https://user-images.githubusercontent.com/23057170/52274391-35052780-2955-11e9-9550-b6d563fbf7ff.png)
 
 ## Database configuration
 
