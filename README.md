@@ -29,7 +29,7 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Database configuration
 
-In its default configuration, Betting Crawler uses an embedded database (H2) which gets populated at startup with data crawled from the web. A similar setup is provided for MySql in case a persistent database configuration is needed.
+In its default configuration, Betting Crawler uses an embedded database (H2) which gets populated when application starts with data crawled from the web. A similar setup is provided for MySql in case a persistent database configuration is needed.
 Note that whenever the database type is changed, the app needs to be run with a different profile: `spring.profiles.active=mysql` for MySql.
 
 You could start MySql locally with whatever installer works for your OS, or with docker:
@@ -70,7 +70,7 @@ A run configuration named `StoiximanApp` should have been created for you if you
 version. Otherwise, run the application by right clicking on the `StoiximanApp` main class and choosing
 `Run 'StoiximanApp'`.
 
-4) Navigate to Petclinic
+4) Navigate to Betting Crawler database
 
 Visit [http://localhost:8080](http://localhost:8080:h2-console) in your browser.
 
