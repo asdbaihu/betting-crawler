@@ -19,15 +19,21 @@ Usename:  sa
 Password: 
 ```
 
-<img width="1024" alt="bettingcrawler-screenshot" src="https://user-images.githubusercontent.com/23057170/52271908-b6f15280-294d-11e9-85fe-73afa8ee23b2.png">
+
+![game-data](https://user-images.githubusercontent.com/23057170/52271908-b6f15280-294d-11e9-85fe-73afa8ee23b2.png)
+
 *Game data*
 
 
-<img width="1024" alt="bettingcrawler-screenshot" src="https://user-images.githubusercontent.com/23057170/52272125-6f1efb00-294e-11e9-8722-f582f0c65736.png">
+
+![bet-data](https://user-images.githubusercontent.com/23057170/52272125-6f1efb00-294e-11e9-8722-f582f0c65736.png)
+
 *Bet data*
 
 
-<img width="1024" alt="bettingcrawler-screenshot" src="https://user-images.githubusercontent.com/23057170/52272101-5f071b80-294e-11e9-8b81-4a47ae4254cd.png">
+
+![football-bet-data](https://user-images.githubusercontent.com/23057170/52272101-5f071b80-294e-11e9-8b81-4a47ae4254cd.png)
+
 *Football Bet data*
 
 
