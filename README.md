@@ -19,7 +19,17 @@ Usename:  sa
 Password: 
 ```
 
-<img width="512" alt="bettingcrawler-screenshot" src="https://user-images.githubusercontent.com/23057170/52229774-65e64d80-28be-11e9-9f7b-0bdc2712c8d0.png">
+<img width="1024" alt="bettingcrawler-screenshot" src="https://user-images.githubusercontent.com/23057170/52271908-b6f15280-294d-11e9-85fe-73afa8ee23b2.png">
+*Game data*
+
+
+<img width="1024" alt="bettingcrawler-screenshot" src="https://user-images.githubusercontent.com/23057170/52272125-6f1efb00-294e-11e9-8722-f582f0c65736.png">
+*Bet data*
+
+
+<img width="1024" alt="bettingcrawler-screenshot" src="https://user-images.githubusercontent.com/23057170/52272101-5f071b80-294e-11e9-8b81-4a47ae4254cd.png">
+*Football Bet data*
+
 
 Or you can run it from Maven directly using the Spring Boot Maven plugin. If you do this it will pick up changes that you make in the project immediately (changes to Java source files require a compile as well - most people use an IDE for this):
 
