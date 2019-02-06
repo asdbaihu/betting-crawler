@@ -19,7 +19,6 @@ Usename:  sa
 Password: 
 ```
 
-<img width="512" alt="bettingcrawler-screenshot" src="https://user-images.githubusercontent.com/23057170/52229774-65e64d80-28be-11e9-9f7b-0bdc2712c8d0.png">
 
 Or you can run it from Maven directly using the Spring Boot Maven plugin. If you do this it will pick up changes that you make in the project immediately (changes to Java source files require a compile as well - most people use an IDE for this):
 
@@ -27,16 +26,15 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 ./mvnw spring-boot:run
 ```
 
+## Screenshots
+Sample data created by Betting Crawler. Screenshot from H2 database.
+
+![h2-console-inner-join](https://user-images.githubusercontent.com/23057170/52333886-0182d580-2a07-11e9-8ef7-0129139b581c.png)
+
 ## Database configuration
 
 In its default configuration, Betting Crawler uses an embedded database (H2) which gets populated when application starts with data crawled from the web. A similar setup is provided for MySql in case a persistent database configuration is needed.
 Note that whenever the database type is changed, the app needs to be run with a different profile: `spring.profiles.active=mysql` for MySql.
-
-You could start MySql locally with whatever installer works for your OS, or with docker:
-
-```
-docker run -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=betting_crawler -p 3306:3306 mysql:5.7.8
-```
 
 ## Working with Betting Crawler in your IDE
 
@@ -75,6 +73,6 @@ version. Otherwise, run the application by right clicking on the `StoiximanApp` 
 Visit [http://localhost:8080](http://localhost:8080:h2-console) in your browser.
 
 
-# License
+## License
 
 The Spring Betting Crawler application is released under version 2.0 of the [MIT License](https://opensource.org/licenses/MIT).
