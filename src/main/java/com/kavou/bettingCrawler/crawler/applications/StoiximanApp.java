@@ -37,7 +37,7 @@ public class StoiximanApp {
         List<String> pagesNotLoaded = new ArrayList<>();
 
         // crawl the webpages
-        System.out.println(ANSI_BLUE+"\nCRAWLING STARTED"+ANSI_RESET);
+        System.out.println(ANSI_GREEN+"\nCRAWLING STARTED"+ANSI_RESET);
 
         // URL of index page
         String indexPageUrl = stoiximan.getIndexPageUrl();
@@ -124,6 +124,7 @@ public class StoiximanApp {
             System.out.println(ANSI_CYAN+"\nAll pages has been loaded correctly"+ANSI_RESET);
         }
 
+        System.out.println("\nYou can now access your database to see the results!");
         System.out.println(ANSI_BLUE+"\nCRAWLING ENDED"+ANSI_RESET);
     }
 }
