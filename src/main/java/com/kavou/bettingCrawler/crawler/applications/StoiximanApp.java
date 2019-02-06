@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @SpringBootApplication
@@ -21,6 +22,9 @@ public class StoiximanApp {
         ApplicationContext context = SpringApplication.run(StoiximanApp.class, args);
         // get the bean for Stoiximan
         Stoiximan stoiximan = context.getBean(Stoiximan.class);
+
+        // list to store the links of the pages that did not loaded correctly
+        List<String> pagesNotLoaded = new ArrayList<>();
 
         // crawl the webpages
         System.out.println("\n**************************** CRAWLING STARTED ****************************");
@@ -48,7 +52,7 @@ public class StoiximanApp {
             try {
                 stoiximan.fetchEventLinks(sportDocument);
             } catch (Exception e) {
-                System.out.println("\nPage of sport: "+sportLink+" did not loaded");
+                pagesNotLoaded.add(sportLink);
             }
             // URLs of event links
             List<String> eventLinks = stoiximan.getEventLinks();
@@ -73,7 +77,7 @@ public class StoiximanApp {
                     try {
                         stoiximan.fetchGameLinks(eventDocument);
                     } catch (Exception e) {
-                        System.out.println("\nPage of event: "+eventLink+" did not loaded");
+                        pagesNotLoaded.add(eventLink);
                     }
 
                     // URLs of game links
@@ -90,20 +94,25 @@ public class StoiximanApp {
                         try {
                             stoiximan.fetchFinalData(gameDocument);
                         } catch (Exception e) {
-                            System.out.println("\nPage of game: "+gameLink+" did not loaded");
+                            pagesNotLoaded.add(gameLink);
                         }
 
                         // save data to database
                         stoiximan.saveFinalData();
-
                     }
-
-
                 }
             }
         }
 
-        System.out.println("\n**************************** CRAWLING ENDED ****************************");
+        // if any page did not loaded correctly
+        if (pagesNotLoaded.size() > 0) {
+            for (String page: pagesNotLoaded) {
+                System.out.println("Page: "+page+" did not loaded correctly");
+            }
+        } else {
+            System.out.println("All pages has been loaded correctly");
+        }
 
+        System.out.println("\n**************************** CRAWLING ENDED ****************************");
     }
 }
