@@ -19,7 +19,7 @@ You can then access the embedded database here: http://localhost:8080/h2-console
 ```
 JDBC URL: jdbc:h2~/betting_crawler
 Usename:  sa
-Password: 
+Password: <Leave this field empty>
 ```
 
 
