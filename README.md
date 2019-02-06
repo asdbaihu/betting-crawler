@@ -73,6 +73,6 @@ version. Otherwise, run the application by right clicking on the `StoiximanApp` 
 Visit [http://localhost:8080](http://localhost:8080:h2-console) in your browser.
 
 
-# License
+## License
 
 The Spring Betting Crawler application is released under version 2.0 of the [MIT License](https://opensource.org/licenses/MIT).
