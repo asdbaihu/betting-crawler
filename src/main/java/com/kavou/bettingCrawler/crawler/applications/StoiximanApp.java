@@ -17,6 +17,16 @@ import java.util.List;
 @EnableJpaRepositories("com.kavou")
 public class StoiximanApp {
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+
     public static void main(String[] args) {
 
         ApplicationContext context = SpringApplication.run(StoiximanApp.class, args);
@@ -27,7 +37,7 @@ public class StoiximanApp {
         List<String> pagesNotLoaded = new ArrayList<>();
 
         // crawl the webpages
-        System.out.println("\n**************************** CRAWLING STARTED ****************************");
+        System.out.println(ANSI_BLUE+"\nCRAWLING STARTED"+ANSI_RESET);
 
         // URL of index page
         String indexPageUrl = stoiximan.getIndexPageUrl();
@@ -58,7 +68,8 @@ public class StoiximanApp {
             List<String> eventLinks = stoiximan.getEventLinks();
 
             String sportToCrawl = stoiximan.getSport();
-            System.out.println("\n-----------> Sport: "+sportToCrawl);
+            System.out.println(ANSI_PURPLE+"\nExtracting data for: "+sportToCrawl+ANSI_RESET);
+            System.out.println(ANSI_PURPLE+"----------------------------------------"+ANSI_RESET);
 
             // progress bar
             int max = eventLinks.size();
@@ -107,12 +118,12 @@ public class StoiximanApp {
         // if any page did not loaded correctly
         if (pagesNotLoaded.size() > 0) {
             for (String page: pagesNotLoaded) {
-                System.out.println("Page: "+page+" did not loaded correctly");
+                System.out.println(ANSI_YELLOW+"\nPage: "+page+" did not loaded correctly"+ANSI_RESET);
             }
         } else {
-            System.out.println("All pages has been loaded correctly");
+            System.out.println(ANSI_CYAN+"\nAll pages has been loaded correctly"+ANSI_RESET);
         }
 
-        System.out.println("\n**************************** CRAWLING ENDED ****************************");
+        System.out.println(ANSI_BLUE+"\nCRAWLING ENDED"+ANSI_RESET);
     }
 }
