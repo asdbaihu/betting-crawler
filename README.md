@@ -1,7 +1,7 @@
 # Betting Crawler Application
 
 ## How it works
-When you run the application it starts automatically to crawl the betting site and populates the database (H2 is the default database, for persistant storage of the data see details below)
+When you run the application it starts automatically to crawl the betting sites and populate the [H2](http://www.h2database.com/html/main.html) (in memory) database. For permanent storage (using MySQL) see details below.
 
 ## Running Betting Crawler locally
 Betting Crawler is a [Spring Boot](https://spring.io/guides/gs/spring-boot) application built using [Maven](https://spring.io/guides/gs/maven/). You can build a jar file and run it from the command line:
@@ -19,7 +19,7 @@ You can then access the embedded database here: http://localhost:8080/h2-console
 ```
 JDBC URL: jdbc:h2~/betting_crawler
 Usename:  sa
-Password: 
+Password: <Leave this field empty>
 ```
 
 
