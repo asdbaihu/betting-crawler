@@ -5,16 +5,12 @@ import com.kavou.bettingCrawler.web.api.entities.Bet;
 import com.kavou.bettingCrawler.web.api.entities.Game;
 import com.kavou.bettingCrawler.web.api.entities.betEntities.FootballBet;
 import com.kavou.bettingCrawler.web.api.repositories.GameRepository;
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -50,6 +46,8 @@ public class Stoiximan implements Parser {
     private String sport = null;
     private String bettor = getBettorName();
 
+    private static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36";
+
     @Autowired
     private GameRepository gameRepository;
 
@@ -59,9 +57,12 @@ public class Stoiximan implements Parser {
     public Document connectAndFetchPage(String Url) {
 
         Document document = null;
+
         try {
             // connect and store the html page to "document"
-            document = Jsoup.connect(Url).get();
+            document = Jsoup.connect(Url)
+                            .userAgent(USER_AGENT)
+                            .get();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -104,8 +105,13 @@ public class Stoiximan implements Parser {
         // clear the list. The list must contain only the event links of the current sport
         eventLinks.clear();
 
-        String cssPathForEventLinks = ".js-checkbox-category.js-league-class.a8p div.js-checkbox-category-body.js-league-class-body.a8t div.ar div.bx.fp div.js-checkbox-category.js-region.a8w div.js-checkbox-category-body.js-region-body div.a8y a.a8r";
+        String cssPathForEventLinks = ".js-checkbox-category-body.js-region-body div.a8y a.a8r";
         Elements eventLinksAsElement = doc.select(cssPathForEventLinks);
+
+        String cssPathForSport = ".a8i.w div.mb h3";
+        Element sportAsElement = doc.select(cssPathForSport).first();
+
+        sport = sportAsElement.text();
 
         /*
         we don't need the links for long term bets.
@@ -137,12 +143,12 @@ public class Stoiximan implements Parser {
                 DEBUGGING
                  */
                 // get super league link ONLY
-                // if(eventLink.contains("Super-League")) {
-                // // add them to list
-                eventLinks.add(eventLink);
+
+                // if(eventLink.contains("Campeonato")) {
+                    eventLinks.add(eventLink);
                 // }
 
-                // if (eventLinks.size() == 10) {
+                // if (eventLinks.size() == 5) {
                 //     break;
                 // }
             }
@@ -161,6 +167,13 @@ public class Stoiximan implements Parser {
         String cssPathForCheckingIfLive = "td.akq.w div.a91 span.a0p";
         Elements checkingIfLiveAsElement = doc.select(cssPathForCheckingIfLive);
 
+        String cssPathForEvent = ".js-league-title.mm label";
+        Element eventAsElement = doc.select(cssPathForEvent).first();
+
+        event = eventAsElement.text();
+
+        // System.out.println("\nInside Stoiximan (event): "+event);
+
         for (int i=0; i<matchLinksAsElement.size(); i++) {
 
             // link of match
@@ -178,7 +191,7 @@ public class Stoiximan implements Parser {
             FOR
             DEBUGGING
              */
-            // if (matchLinks.size() == 5) {
+            // if (matchLinks.size() == 2) {
             //     break;
             // }
         }
@@ -192,10 +205,10 @@ public class Stoiximan implements Parser {
 
         // sport
         // sport name is second at list
-        Element sportAsElement = doc.select(cssPathForSport).get(1);
-        sport = sportAsElement.text();
+        // Element sportAsElement = doc.select(cssPathForSport).get(1);
+        // sport = sportAsElement.text();
 
-        System.out.println("Inside Stoiximan (sport): "+sport);
+        // System.out.println("Inside Stoiximan (sport): "+sport);
 
         // data for creating GAME
 
@@ -214,14 +227,12 @@ public class Stoiximan implements Parser {
         Element opponentsAsElement = doc.select(cssPathForOpponents).first();
         opponents = opponentsAsElement.text();
 
-        System.out.println("Inside Stoiximan (opponents): "+opponents);
+        // System.out.println("Inside Stoiximan (opponents): "+opponents);
 
         // event
         // event name is last at list
-        Element eventAsElement = doc.select(cssPathForEvent).last();
-        event = eventAsElement.text();
-
-        System.out.println("Inside Stoiximan (event): "+event);
+        // Element eventAsElement = doc.select(cssPathForEvent).last();
+        // event = eventAsElement.text();
 
         // date and time
         Element dateAsElement = doc.select(cssPathForDateAndTime).first();
@@ -246,13 +257,13 @@ public class Stoiximan implements Parser {
         SimpleDateFormat dateToStringFormatterDateOnly = new SimpleDateFormat("dd/MM/yyyy");
         String dateFormattedAsString = dateToStringFormatterDateOnly.format(date);
         // prints the date (format: dd/MM/yyyy)
-        System.out.println("Inside Stoiximan (Date (String)): "+dateFormattedAsString);
+        // System.out.println("Inside Stoiximan (Date (String)): "+dateFormattedAsString);
 
         // extracts time only
         SimpleDateFormat dateToStringFormatterTimeOnly = new SimpleDateFormat("HH:mm");
         String timeFormattedAsString = dateToStringFormatterTimeOnly.format(date);
         // prints the time (format: HH:mm)
-        System.out.println("Inside Stoiximan (Time (String)): "+timeFormattedAsString);
+        // System.out.println("Inside Stoiximan (Time (String)): "+timeFormattedAsString);
 
         // data for creating BETS
 
@@ -287,8 +298,8 @@ public class Stoiximan implements Parser {
                 fetchFootballBet(doc);
         }
 
-        System.out.println("Inside Stoiximan (home win): "+homeWinAsString);
-        System.out.println("Inside Stoiximan (away win): "+awayWinAsString);
+        // System.out.println("Inside Stoiximan (home win): "+homeWinAsString);
+        // System.out.println("Inside Stoiximan (away win): "+awayWinAsString);
 
     }
 
@@ -368,9 +379,9 @@ public class Stoiximan implements Parser {
         // 1) draw
         Elements odds1X2AsElement = doc.select(cssPathFor1X2);
         // draw is the middle (second) element of 3 elements
-        // i=0 is the first i=1 is the second, i=2 is the third
+        // i=0 is the first, i=1 is the second, i=2 is the third
         String drawAsString = odds1X2AsElement.get(1).text();
-        System.out.println("Inside Stoiximan (draw): "+drawAsString);
+        // System.out.println("Inside Stoiximan (draw): "+drawAsString);
 
         // convert String to BigDecimal
         draw = new BigDecimal(drawAsString);
@@ -735,6 +746,102 @@ public class Stoiximan implements Parser {
 
     public void setFinalData(List<String> finalData) {
         this.finalData = finalData;
+    }
+
+    public String getBETTOR_NAME() {
+        return BETTOR_NAME;
+    }
+
+    public String getINDEX_PAGE_URL() {
+        return INDEX_PAGE_URL;
+    }
+
+    public int getMatchCode() {
+        return matchCode;
+    }
+
+    public void setMatchCode(int matchCode) {
+        this.matchCode = matchCode;
+    }
+
+    public String getEvent() {
+        return event;
+    }
+
+    public void setEvent(String event) {
+        this.event = event;
+    }
+
+    public String getOpponents() {
+        return opponents;
+    }
+
+    public void setOpponents(String opponents) {
+        this.opponents = opponents;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+    public List<Bet> getBets() {
+        return bets;
+    }
+
+    public void setBets(List<Bet> bets) {
+        this.bets = bets;
+    }
+
+    public BigDecimal getHomeWin() {
+        return homeWin;
+    }
+
+    public void setHomeWin(BigDecimal homeWin) {
+        this.homeWin = homeWin;
+    }
+
+    public BigDecimal getAwayWin() {
+        return awayWin;
+    }
+
+    public void setAwayWin(BigDecimal awayWin) {
+        this.awayWin = awayWin;
+    }
+
+    public String getSport() {
+        return sport;
+    }
+
+    public void setSport(String sport) {
+        this.sport = sport;
+    }
+
+    public String getBettor() {
+        return bettor;
+    }
+
+    public void setBettor(String bettor) {
+        this.bettor = bettor;
+    }
+
+    public GameRepository getGameRepository() {
+        return gameRepository;
+    }
+
+    public void setGameRepository(GameRepository gameRepository) {
+        this.gameRepository = gameRepository;
     }
 
     @Override

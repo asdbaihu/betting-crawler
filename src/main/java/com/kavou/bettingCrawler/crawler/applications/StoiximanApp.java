@@ -1,18 +1,15 @@
 package com.kavou.bettingCrawler.crawler.applications;
 
 import com.kavou.bettingCrawler.crawler.bettors.Stoiximan;
+import me.tongfei.progressbar.ProgressBar;
 import org.jsoup.nodes.Document;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @SpringBootApplication
 @ComponentScan("com.kavou")
@@ -22,9 +19,11 @@ public class StoiximanApp {
     public static void main(String[] args) {
 
         ApplicationContext context = SpringApplication.run(StoiximanApp.class, args);
-
         // get the bean for Stoiximan
         Stoiximan stoiximan = context.getBean(Stoiximan.class);
+
+        // crawl the webpages
+        System.out.println("\n**************************** CRAWLING STARTED ****************************");
 
         // URL of index page
         String indexPageUrl = stoiximan.getIndexPageUrl();
@@ -32,53 +31,79 @@ public class StoiximanApp {
         Document indexDocument = stoiximan.connectAndFetchPage(indexPageUrl);
 
         // create the sport links list
-        stoiximan.fetchSportLinks(indexDocument);
+        try {
+            stoiximan.fetchSportLinks(indexDocument);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         // URLs of sport links
         List<String> sportLinks = stoiximan.getSportLinks();
 
         // visit every sport link
         for (String sportLink: sportLinks) {
 
-            System.out.println("------------>>>>>>>>>> Sport link: "+sportLink);
-
             Document sportDocument = stoiximan.connectAndFetchPage(sportLink);
 
             // create the event links list
-            stoiximan.fetchEventLinks(sportDocument);
+            try {
+                stoiximan.fetchEventLinks(sportDocument);
+            } catch (Exception e) {
+                System.out.println("\nPage of sport: "+sportLink+" did not loaded");
+            }
             // URLs of event links
             List<String> eventLinks = stoiximan.getEventLinks();
 
-            // visit every event
-            for (String eventLink: eventLinks) {
+            String sportToCrawl = stoiximan.getSport();
+            System.out.println("\n-----------> Sport: "+sportToCrawl);
 
-                System.out.println("------------>>>>>>>>>> Event link: "+eventLink);
+            // progress bar
+            int max = eventLinks.size();
+            try (ProgressBar bar = new ProgressBar(sportToCrawl+" progress", max)) {
 
-                Document eventDocument = stoiximan.connectAndFetchPage(eventLink);
+                // visit every event
+                for (String eventLink : eventLinks) {
 
-                // create the game links list
-                stoiximan.fetchGameLinks(eventDocument);
-                // URLs of game links
-                List<String> gameLinks = stoiximan.getMatchLinks();
+                    bar.step();
 
-                // for (String m: matchLinks) {
-                //     System.out.println("------------>>>>>>>>>> Match Links: "+m);
-                // }
+                    // System.out.println("-----------> Event link: " + eventLink);
 
-                // visit every match
-                for (String gameLink: gameLinks) {
+                    Document eventDocument = stoiximan.connectAndFetchPage(eventLink);
 
-                    System.out.println("------------>>>>>>>>>> Game link: "+gameLink);
+                    // create the game links list
+                    try {
+                        stoiximan.fetchGameLinks(eventDocument);
+                    } catch (Exception e) {
+                        System.out.println("\nPage of event: "+eventLink+" did not loaded");
+                    }
 
-                    Document matchDocument = stoiximan.connectAndFetchPage(gameLink);
+                    // URLs of game links
+                    List<String> gameLinks = stoiximan.getMatchLinks();
 
-                    // fetch final data (data for match and bets)
-                    stoiximan.fetchFinalData(matchDocument);
+                    // visit every match
+                    for (String gameLink : gameLinks) {
 
-                    // save data to database
-                    stoiximan.saveFinalData();
+                        // System.out.println("-----------> Game link: "+gameLink);
+
+                        Document gameDocument = stoiximan.connectAndFetchPage(gameLink);
+
+                        // fetch final data (data for match and bets)
+                        try {
+                            stoiximan.fetchFinalData(gameDocument);
+                        } catch (Exception e) {
+                            System.out.println("\nPage of game: "+gameLink+" did not loaded");
+                        }
+
+                        // save data to database
+                        stoiximan.saveFinalData();
+
+                    }
+
+
                 }
             }
         }
-        System.out.println("**************************** END ****************************");
+
+        System.out.println("\n**************************** CRAWLING ENDED ****************************");
+
     }
 }
