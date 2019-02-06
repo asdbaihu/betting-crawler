@@ -30,7 +30,7 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 ```
 
 ## Screenshots
-Sample data created by Betting Crawler. Screenshot from H2 database.
+Sample data created by Betting Crawler and saved in database.
 
 ![h2-console-inner-join](https://user-images.githubusercontent.com/23057170/52333886-0182d580-2a07-11e9-8ef7-0129139b581c.png)
 
