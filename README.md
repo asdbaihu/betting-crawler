@@ -1,5 +1,8 @@
 # Betting Crawler Application
 
+## How it works
+When you run the application it starts automatically to crawl the betting site and populates the database (H2 is the default database, for persistant storage of the data see details below)
+
 ## Running Betting Crawler locally
 Betting Crawler is a [Spring Boot](https://spring.io/guides/gs/spring-boot) application built using [Maven](https://spring.io/guides/gs/maven/). You can build a jar file and run it from the command line:
 
@@ -33,7 +36,7 @@ Sample data created by Betting Crawler. Screenshot from H2 database.
 
 ## Database configuration
 
-In its default configuration, Betting Crawler uses an embedded database (H2) which gets populated when application starts with data crawled from the web. A similar setup is provided for MySql in case a persistent database configuration is needed.
+In its default configuration, Betting Crawler uses an embedded database (H2) which gets populated when application starts with data crawled from the web. A similar setup is provided for MySQL in case a persistent database configuration is needed.
 Note that whenever the database type is changed, the app needs to be run with a different profile: `spring.profiles.active=mysql` for MySql.
 
 ## Working with Betting Crawler in your IDE
