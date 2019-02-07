@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 @SpringBootApplication
 @ComponentScan("com.kavou")
@@ -33,98 +34,113 @@ public class StoiximanApp {
         // get the bean for Stoiximan
         Stoiximan stoiximan = context.getBean(Stoiximan.class);
 
-        // list to store the links of the pages that did not loaded correctly
-        List<String> pagesNotLoaded = new ArrayList<>();
+        // give user the choice to crawl for data
+        System.out.println(ANSI_RED+"\nPress 1 to crawl for data. Application now is running in server mode!"+ANSI_RESET);
+        boolean crawlForData;
+        Scanner in = new Scanner(System.in);
+        int choice  = in.nextInt();
 
-        // crawl the webpages
-        System.out.println(ANSI_GREEN+"\nCRAWLING STARTED"+ANSI_RESET);
-
-        // URL of index page
-        String indexPageUrl = stoiximan.getIndexPageUrl();
-        // connect and fetch the index page
-        Document indexDocument = stoiximan.connectAndFetchPage(indexPageUrl);
-
-        // create the sport links list
-        try {
-            stoiximan.fetchSportLinks(indexDocument);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (choice == 1) { // Crawl for data
+            crawlForData = true;
+        } else { // Stay on server mode
+            crawlForData = false;
         }
-        // URLs of sport links
-        List<String> sportLinks = stoiximan.getSportLinks();
 
-        // visit every sport link
-        for (String sportLink: sportLinks) {
+        if (crawlForData) {
 
-            Document sportDocument = stoiximan.connectAndFetchPage(sportLink);
+            // list to store the links of the pages that did not loaded correctly
+            List<String> pagesNotLoaded = new ArrayList<>();
 
-            // create the event links list
+            // crawl the webpages
+            System.out.println(ANSI_GREEN + "\nCRAWLING STARTED" + ANSI_RESET);
+
+            // URL of index page
+            String indexPageUrl = stoiximan.getIndexPageUrl();
+            // connect and fetch the index page
+            Document indexDocument = stoiximan.connectAndFetchPage(indexPageUrl);
+
+            // create the sport links list
             try {
-                stoiximan.fetchEventLinks(sportDocument);
+                stoiximan.fetchSportLinks(indexDocument);
             } catch (Exception e) {
-                pagesNotLoaded.add(sportLink);
+                e.printStackTrace();
             }
-            // URLs of event links
-            List<String> eventLinks = stoiximan.getEventLinks();
+            // URLs of sport links
+            List<String> sportLinks = stoiximan.getSportLinks();
 
-            String sportToCrawl = stoiximan.getSport();
-            System.out.println(ANSI_PURPLE+"\nExtracting data for: "+sportToCrawl+ANSI_RESET);
-            System.out.println(ANSI_PURPLE+"----------------------------------------"+ANSI_RESET);
+            // visit every sport link
+            for (String sportLink : sportLinks) {
 
-            // progress bar
-            int max = eventLinks.size();
-            try (ProgressBar bar = new ProgressBar(sportToCrawl+" progress", max)) {
+                Document sportDocument = stoiximan.connectAndFetchPage(sportLink);
 
-                // visit every event
-                for (String eventLink : eventLinks) {
+                // create the event links list
+                try {
+                    stoiximan.fetchEventLinks(sportDocument);
+                } catch (Exception e) {
+                    pagesNotLoaded.add(sportLink);
+                }
+                // URLs of event links
+                List<String> eventLinks = stoiximan.getEventLinks();
 
-                    bar.step();
+                String sportToCrawl = stoiximan.getSport();
+                System.out.println(ANSI_PURPLE + "\nExtracting data for: " + sportToCrawl + ANSI_RESET);
+                System.out.println(ANSI_PURPLE + "----------------------------------------" + ANSI_RESET);
 
-                    // System.out.println("-----------> Event link: " + eventLink);
+                // progress bar
+                int max = eventLinks.size();
+                try (ProgressBar bar = new ProgressBar(sportToCrawl + " progress", max)) {
 
-                    Document eventDocument = stoiximan.connectAndFetchPage(eventLink);
+                    // visit every event
+                    for (String eventLink : eventLinks) {
 
-                    // create the game links list
-                    try {
-                        stoiximan.fetchGameLinks(eventDocument);
-                    } catch (Exception e) {
-                        pagesNotLoaded.add(eventLink);
-                    }
+                        bar.step();
 
-                    // URLs of game links
-                    List<String> gameLinks = stoiximan.getMatchLinks();
+                        // System.out.println("-----------> Event link: " + eventLink);
 
-                    // visit every match
-                    for (String gameLink : gameLinks) {
+                        Document eventDocument = stoiximan.connectAndFetchPage(eventLink);
 
-                        // System.out.println("-----------> Game link: "+gameLink);
-
-                        Document gameDocument = stoiximan.connectAndFetchPage(gameLink);
-
-                        // fetch final data (data for match and bets)
+                        // create the game links list
                         try {
-                            stoiximan.fetchFinalData(gameDocument);
+                            stoiximan.fetchGameLinks(eventDocument);
                         } catch (Exception e) {
-                            pagesNotLoaded.add(gameLink);
+                            pagesNotLoaded.add(eventLink);
                         }
 
-                        // save data to database
-                        stoiximan.saveFinalData();
+                        // URLs of game links
+                        List<String> gameLinks = stoiximan.getMatchLinks();
+
+                        // visit every match
+                        for (String gameLink : gameLinks) {
+
+                            // System.out.println("-----------> Game link: "+gameLink);
+
+                            Document gameDocument = stoiximan.connectAndFetchPage(gameLink);
+
+                            // fetch final data (data for match and bets)
+                            try {
+                                stoiximan.fetchFinalData(gameDocument);
+                            } catch (Exception e) {
+                                pagesNotLoaded.add(gameLink);
+                            }
+
+                            // save data to database
+                            stoiximan.saveFinalData();
+                        }
                     }
                 }
             }
-        }
 
-        // if any page did not loaded correctly
-        if (pagesNotLoaded.size() > 0) {
-            for (String page: pagesNotLoaded) {
-                System.out.println(ANSI_YELLOW+"\nPage: "+page+" did not loaded correctly"+ANSI_RESET);
+            // if any page did not loaded correctly
+            if (pagesNotLoaded.size() > 0) {
+                for (String page : pagesNotLoaded) {
+                    System.out.println(ANSI_YELLOW + "\nPage: " + page + " did not loaded correctly" + ANSI_RESET);
+                }
+            } else {
+                System.out.println(ANSI_CYAN + "\nAll pages has been loaded correctly" + ANSI_RESET);
             }
-        } else {
-            System.out.println(ANSI_CYAN+"\nAll pages has been loaded correctly"+ANSI_RESET);
-        }
 
-        System.out.println("\nYou can now access your database to see the results!");
-        System.out.println(ANSI_BLUE+"\nCRAWLING ENDED"+ANSI_RESET);
+            System.out.println("\nYou can now access your database to check the results!");
+            System.out.println(ANSI_GREEN + "\nCRAWLING ENDED" + ANSI_RESET);
+        }
     }
 }
