@@ -1,7 +1,7 @@
 # Betting Crawler Application
 
 ## How it works
-When you run the application it starts automatically to crawl the betting sites and populate the [H2](http://www.h2database.com/html/main.html) (in memory) database. For permanent storage (using MySQL) see details below.
+When you run the application it starts automatically to crawl the betting sites and populate the [H2](http://www.h2database.com/html/main.html) (in-memory) database. For permanent storage (using MySQL) see details below.
 
 ## Running Betting Crawler locally
 Betting Crawler is a [Spring Boot](https://spring.io/guides/gs/spring-boot) application built using [Maven](https://spring.io/guides/gs/maven/). You can build a jar file and run it from the command line:
@@ -30,14 +30,17 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 ```
 
 ## Screenshots
-Sample data created by Betting Crawler and saved in database.
+Sample data created by Betting Crawler and saved in (H2) database.
 
-![h2-console-inner-join](https://user-images.githubusercontent.com/23057170/52333886-0182d580-2a07-11e9-8ef7-0129139b581c.png)
+![inner-join](https://user-images.githubusercontent.com/23057170/52959144-347d7f80-339e-11e9-89ff-511335e535ec.png)
 
 ## Database configuration
 
-In its default configuration, Betting Crawler uses an embedded database (H2) which gets populated when application starts with data crawled from the web. A similar setup is provided for MySQL in case a persistent database configuration is needed.
-Note that whenever the database type is changed, the app needs to be run with a different profile: `spring.profiles.active=mysql` for MySql.
+In its default configuration, Betting Crawler uses an in-memory database (H2) which gets populated when application starts with data extracted from the web. 
+
+A similar setup is provided for MySQL in case a persistent database configuration is needed.
+Note that whenever the database type is changed, the app needs to be run with a different profile: `spring.profiles.active=mysql` for MySql. 
+You could start MySql locally with whatever installer works for your OS.
 
 ## Working with Betting Crawler in your IDE
 
