@@ -20,6 +20,18 @@
 
 	<dependencies>
 
+        <dependency>
+            <groupId>io.github.jpenren</groupId>
+            <artifactId>thymeleaf-spring-data-dialect</artifactId>
+            <version>3.3.1</version>
+        </dependency>
+
+		<!-- dependency for thymeleaf -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
 		<!-- dependency for progress bar -->
 		<dependency>
 			<groupId>me.tongfei</groupId>
