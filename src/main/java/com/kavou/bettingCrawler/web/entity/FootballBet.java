@@ -1,6 +1,4 @@
-package com.kavou.bettingCrawler.web.api.entities.betEntities;
-
-import com.kavou.bettingCrawler.web.api.entities.Bet;
+package com.kavou.bettingCrawler.web.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -8,7 +6,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name="football_bet")
 // associate Bet with FootballBet
-@PrimaryKeyJoinColumn(name="bet_id")
+@PrimaryKeyJoinColumn(name="football_bet_id")
 public class FootballBet extends Bet {
 
     // draw
@@ -30,6 +28,8 @@ public class FootballBet extends Bet {
     private BigDecimal over5_5;
     @Column(name="`over_6,5`")
     private BigDecimal over6_5;
+    @Column(name="`over_7,5`")
+    private BigDecimal over7_5;
 
     // under goals
     @Column(name="`under_0,5`")
@@ -46,6 +46,8 @@ public class FootballBet extends Bet {
     private BigDecimal under5_5;
     @Column(name="`under_6,5`")
     private BigDecimal under6_5;
+    @Column(name="`under_7,5`")
+    private BigDecimal under7_5;
 
     // GG/NG
     @Column(name="GG")
@@ -84,8 +86,8 @@ public class FootballBet extends Bet {
     public FootballBet() {
     }
 
-    public FootballBet(String sport, String bettor, BigDecimal homeWin, BigDecimal awayWin) {
-        super(sport, bettor, homeWin, awayWin);
+    public FootballBet(BigDecimal homeWin, BigDecimal awayWin) {
+        super(homeWin, awayWin);
     }
 
     public BigDecimal getDraw() {
@@ -320,10 +322,28 @@ public class FootballBet extends Bet {
         Away_Away = away_Away;
     }
 
+    public BigDecimal getOver7_5() {
+        return over7_5;
+    }
+
+    public void setOver7_5(BigDecimal over7_5) {
+        this.over7_5 = over7_5;
+    }
+
+    public BigDecimal getUnder7_5() {
+        return under7_5;
+    }
+
+    public void setUnder7_5(BigDecimal under7_5) {
+        this.under7_5 = under7_5;
+    }
+
     @Override
     public String toString() {
         return "FootballBet{" +
                 "draw=" + draw +
+                ", over0_5=" + over0_5 +
+                ", under0_5=" + under0_5 +
                 '}';
     }
 }

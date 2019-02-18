@@ -1,9 +1,10 @@
-package com.kavou.bettingCrawler.web.api.entities;
+package com.kavou.bettingCrawler.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -16,12 +17,6 @@ public class Bet {
     @Column(name="id")
     private int id;
 
-    @Column(name="sport")
-    private String sport;
-
-    @Column(name="bettor")
-    private String bettor;
-
     @Column(name="home_win")
     private BigDecimal homeWin;
 
@@ -30,20 +25,22 @@ public class Bet {
 
     @JsonFormat(pattern="dd/MM/yyyy-HH:mm", timezone="Europe/Athens")
     @Column(name="created_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date createdAt;
+    private LocalDateTime createdAt;
+
+    // associate game with bet
+    @ManyToOne()
+    @JoinColumn(name="game_id")
+    private Game game;
 
     @PrePersist
     protected void onCreate() {
-        createdAt = new Date();
+        createdAt = LocalDateTime.now();
     }
 
     public Bet() {
     }
 
-    public Bet(String sport, String bettor, BigDecimal homeWin, BigDecimal awayWin) {
-        this.sport = sport;
-        this.bettor = bettor;
+    public Bet(BigDecimal homeWin, BigDecimal awayWin) {
         this.homeWin = homeWin;
         this.awayWin = awayWin;
     }
@@ -54,22 +51,6 @@ public class Bet {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getSport() {
-        return sport;
-    }
-
-    public void setSport(String sport) {
-        this.sport = sport;
-    }
-
-    public String getBettor() {
-        return bettor;
-    }
-
-    public void setBettor(String bettor) {
-        this.bettor = bettor;
     }
 
     public BigDecimal getHomeWin() {
@@ -88,19 +69,25 @@ public class Bet {
         this.awayWin = awayWin;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     @Override
     public String toString() {
         return "Bet{" +
-                "sport='" + sport + '\'' +
-                ", bettor='" + bettor + '\'' +
                 ", homeWin=" + homeWin +
                 ", awayWin=" + awayWin +
                 ", createdAt=" + createdAt +
