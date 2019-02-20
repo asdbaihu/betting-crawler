@@ -38,8 +38,8 @@ Sample data created by Betting Crawler and saved in (H2) database.
 
 In its default configuration, Betting Crawler uses an in-memory database (H2) which gets populated when application starts with data extracted from the web. 
 
-A similar setup is provided for MySQL in case a persistent database configuration is needed.
-Note that whenever the database type is changed, the app needs to be run with a different profile: `spring.profiles.active=mysql` for MySql. You could start MySql locally with whatever installer works for your OS.
+A similar setup is provided for MySQL in case a persistent database configuration is needed. You should first [create the schema](src/main/resources/db/mysql/schema.sql) and start MySQL locally with whatever installer works for your OS.
+Note that whenever the database type is changed, the app needs to be run with a different profile: `java -jar target/*.jar --spring.profiles.active=mysql` for MySQL. 
 
 ## Working with Betting Crawler in your IDE
 
