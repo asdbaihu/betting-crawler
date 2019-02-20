@@ -56,8 +56,11 @@ public class StoiximanApp {
             // crawling started
             double startTime = System.nanoTime();
 
-            // list to store the links of the pages that did not loaded correctly
+            // list with the links of pages that did not loaded correctly
             List<String> pagesNotLoaded = new ArrayList<>();
+
+            // list with the messages from exceptions
+            List<String> exceptionMessages = new ArrayList<>();
 
             // crawl the webpages
             System.out.println(ANSI_GREEN + "\nCRAWLING STARTED" + ANSI_RESET);
@@ -71,14 +74,14 @@ public class StoiximanApp {
             try {
                 stoiximanParser.fetchBettorData(indexDocument);
             } catch (Exception e) {
-                e.printStackTrace();
+                exceptionMessages.add(e.getMessage());
             }
 
             // get sport data and create the sport links list
             try {
                 stoiximanParser.fetchSportData(indexDocument);
             } catch (Exception e) {
-                e.printStackTrace();
+                exceptionMessages.add(e.getMessage());
             }
             // URLs of sport links
             List<String> sportLinks = stoiximanParser.getSportLinks();
@@ -93,14 +96,11 @@ public class StoiximanApp {
                     stoiximanParser.fetchEventData(sportDocument);
                 } catch (Exception e) {
                     pagesNotLoaded.add(sportLink);
+                    exceptionMessages.add(e.getMessage());
                 }
 
                 // URLs of event links
                 List<String> eventLinks = stoiximanParser.getEventLinks();
-
-                // String sportToCrawl = stoiximanParser.getSportName();
-                // System.out.println(ANSI_PURPLE + "\nExtracting data for: " + sportToCrawl + ANSI_RESET);
-                // System.out.println(ANSI_PURPLE + "----------------------------------------" + ANSI_RESET);
 
                 // progress bar
                 int max = eventLinks.size();
@@ -119,7 +119,9 @@ public class StoiximanApp {
                         try {
                             stoiximanParser.fetchGameData(eventDocument);
                         } catch (Exception e) {
+                            // e.printStackTrace();
                             pagesNotLoaded.add(eventLink);
+                            exceptionMessages.add(e.getMessage());
                         }
 
                         // URLs of game links
@@ -128,7 +130,7 @@ public class StoiximanApp {
                         // visit every match
                         for (String gameLink : gameLinks) {
 
-                            // System.out.println("-----------> Game link: "+gameLink);
+                            System.out.println("-----------> Game link: "+gameLink);
 
                             Document gameDocument = stoiximanParser.connectAndFetchPage(gameLink);
 
@@ -136,8 +138,9 @@ public class StoiximanApp {
                             try {
                                 stoiximanParser.fetchBetData(gameDocument);
                             } catch (Exception e) {
+                                // e.printStackTrace();
                                 pagesNotLoaded.add(gameLink);
-                                System.out.println(e.getMessage());
+                                exceptionMessages.add(e.getMessage());
                             }
 
                         }
@@ -148,8 +151,10 @@ public class StoiximanApp {
             // if any page did not loaded correctly
             if (pagesNotLoaded.size() > 0) {
                 System.out.println("");
-                for (String page : pagesNotLoaded) {
-                    System.out.println(ANSI_YELLOW + "Page: " + page + " did not loaded correctly" + ANSI_RESET);
+                for (int i=0; i<pagesNotLoaded.size(); i++) {
+                    System.out.println(ANSI_YELLOW + "Page: " + pagesNotLoaded.get(i) + " did not loaded correctly" + ANSI_RESET);
+                    System.out.println(ANSI_GREEN + "Exception message: " + exceptionMessages.get(i) + ANSI_RESET);
+                    System.out.println(ANSI_BLACK + "--------------------------------------" + ANSI_RESET);
                 }
             } else {
                 System.out.println(ANSI_CYAN + "\nAll pages has been loaded correctly" + ANSI_RESET);
