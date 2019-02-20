@@ -61,7 +61,7 @@ public class Bettor {
 
     @Override
     public String toString() {
-        return "Event{" +
+        return "Bettor{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';

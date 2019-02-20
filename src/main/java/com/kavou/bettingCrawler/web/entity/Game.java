@@ -1,6 +1,7 @@
 package com.kavou.bettingCrawler.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -25,10 +26,12 @@ public class Game {
     private String opponents;
 
     @JsonFormat(pattern="dd/MM/yyyy", timezone="Europe/Athens")
+    @DateTimeFormat(pattern="dd/MM/yyyy")
     @Column(name="date")
     private LocalDate date;
 
     @JsonFormat(pattern="HH:mm", timezone="Europe/Athens")
+    @DateTimeFormat(pattern="HH:mm")
     @Column(name="time")
     private LocalTime time;
 

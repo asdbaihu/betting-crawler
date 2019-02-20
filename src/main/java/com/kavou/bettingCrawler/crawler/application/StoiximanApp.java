@@ -33,8 +33,7 @@ public class StoiximanApp {
 
     public static void main(String[] args) {
 
-        // program started
-        double startTime = System.nanoTime();
+
 
         ApplicationContext context = SpringApplication.run(StoiximanApp.class, args);
         // get the bean for StoiximanParser
@@ -53,6 +52,9 @@ public class StoiximanApp {
         }
 
         if (crawlForData) {
+
+            // crawling started
+            double startTime = System.nanoTime();
 
             // list to store the links of the pages that did not loaded correctly
             List<String> pagesNotLoaded = new ArrayList<>();
@@ -156,7 +158,7 @@ public class StoiximanApp {
             System.out.println("\nYou can now access your database to check the results!");
             System.out.println(ANSI_GREEN + "\nCRAWLING ENDED\n" + ANSI_RESET);
 
-            // program finished
+            // crawling finished
             double endTime = System.nanoTime();
             //Time in nanoseconds
             double totalTime = endTime - startTime;

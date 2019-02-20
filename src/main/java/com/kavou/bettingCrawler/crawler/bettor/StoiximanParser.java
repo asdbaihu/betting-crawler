@@ -800,7 +800,7 @@ public class StoiximanParser implements Parser {
                     footballBet.setUnder6_5(oddToAdd);
                     break;
                 case ("under7_5"):
-                    footballBet.setOver7_5(oddToAdd);
+                    footballBet.setUnder7_5(oddToAdd);
                     break;
             }
         }

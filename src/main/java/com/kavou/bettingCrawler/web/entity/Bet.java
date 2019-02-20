@@ -1,6 +1,7 @@
 package com.kavou.bettingCrawler.web.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -14,7 +15,7 @@ public class Bet {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name="bet_id")
     private int id;
 
     @Column(name="home_win")
@@ -24,6 +25,7 @@ public class Bet {
     private BigDecimal awayWin;
 
     @JsonFormat(pattern="dd/MM/yyyy-HH:mm", timezone="Europe/Athens")
+    @DateTimeFormat(pattern="dd/MM/yyyy HH:mm")
     @Column(name="created_at")
     private LocalDateTime createdAt;
 

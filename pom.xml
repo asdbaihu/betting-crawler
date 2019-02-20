@@ -20,6 +20,7 @@
 
 	<dependencies>
 
+		<!-- dependency for pagination -->
         <dependency>
             <groupId>io.github.jpenren</groupId>
             <artifactId>thymeleaf-spring-data-dialect</artifactId>
@@ -52,7 +53,7 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
-        <!-- Add dependency for Spring Data REST -->
+        <!-- dependency for Spring Data REST -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
@@ -82,7 +83,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Add dependency for JSOUP -->
+		<!-- dependency for JSOUP -->
 		<dependency>
 			<!-- jsoup HTML parser library @ https://jsoup.org/ -->
 			<groupId>org.jsoup</groupId>

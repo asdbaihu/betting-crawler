@@ -1,15 +1,12 @@
-package com.kavou.bettingCrawler.web.dao;
+package com.kavou.bettingCrawler.web.service;
 
 import com.kavou.bettingCrawler.web.entity.Event;
 import com.kavou.bettingCrawler.web.entity.Sport;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface EventRepository extends JpaRepository<Event, Integer> {
+public interface EventService {
 
-    boolean existsByNameAndSport(String name, Sport sport);
-    Event getOneByName(String name);
     Event getOneById(int eventId);
     Page<Event> findAllBySport(Pageable page, Sport sport);
 }

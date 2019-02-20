@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sd="http://www.w3.org/1999/xhtml">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Betting Crawler</title>
+</head>
+<body>
+
+<div class="container">
+
+    <h3>Bets of bettor: <span th:text="${game.event.sport.bettor.name}" /> </h3>
+
+    <table class="table table-dark">
+
+        <thead>
+        <tr>
+            <th scope="col">Sport</th>
+            <th scope="col">Event</th>
+            <th scope="col">Opponents</th>
+            <th scope="col">Date</th>
+            <th scope="col">Time</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td th:text="${game.event.sport.name}" />
+            <td th:text="${game.event.name}" />
+            <td th:text="${game.opponents}" />
+            <td th:text="${{game.date}}" />
+            <td th:text="${{game.time}}" />
+        </tr>
+        </tbody>
+
+    </table>
+
+    <table class="table">
+
+        <thead>
+        <tr>
+            <th scope="col">1</th>
+            <th scope="col">X</th>
+            <th scope="col">2</th>
+
+            <th scope="col">Over 0,5</th>
+            <th scope="col">Over 1,5</th>
+            <th scope="col">Over 2,5</th>
+            <th scope="col">Over 3,5</th>
+            <th scope="col">Over 4,5</th>
+            <th scope="col">Over 5,5</th>
+            <th scope="col">Over 6,5</th>
+            <th scope="col">Over 7,5</th>
+
+            <th scope="col">Under 0,5</th>
+            <th scope="col">Under 1,5</th>
+            <th scope="col">Under 2,5</th>
+            <th scope="col">Under 3,5</th>
+            <th scope="col">Under 4,5</th>
+            <th scope="col">Under 5,5</th>
+            <th scope="col">Under 6,5</th>
+            <th scope="col">Under 7,5</th>
+
+            <th scope="col">Goal Goal</th>
+            <th scope="col">No Goal</th>
+
+            <th scope="col">1X</th>
+            <th scope="col">2X</th>
+            <th scope="col">12</th>
+
+            <th scope="col">1/1</th>
+            <th scope="col">X/1</th>
+            <th scope="col">2/1</th>
+            <th scope="col">1/X</th>
+            <th scope="col">X/X</th>
+            <th scope="col">2/X</th>
+            <th scope="col">1/2</th>
+            <th scope="col">X/2</th>
+            <th scope="col">2/2</th>
+
+            <th scope="col">Created at</th>
+        </tr>
+        </thead>
+
+        <tbody th:each="bet : ${bets}">
+
+            <td th:text="${bet.homeWin}" />
+            <td th:text="${bet.draw}" />
+            <td th:text="${bet.awayWin}" />
+
+            <td th:text="${bet.over0_5}" />
+            <td th:text="${bet.over1_5}" />
+            <td th:text="${bet.over2_5}" />
+            <td th:text="${bet.over3_5}" />
+            <td th:text="${bet.over4_5}" />
+            <td th:text="${bet.over5_5}" />
+            <td th:text="${bet.over6_5}" />
+            <td th:text="${bet.over7_5}" />
+
+            <td th:text="${bet.under0_5}" />
+            <td th:text="${bet.under1_5}" />
+            <td th:text="${bet.under2_5}" />
+            <td th:text="${bet.under3_5}" />
+            <td th:text="${bet.under4_5}" />
+            <td th:text="${bet.under5_5}" />
+            <td th:text="${bet.under6_5}" />
+            <td th:text="${bet.under7_5}" />
+
+            <td th:text="${bet.goalGoal}" />
+            <td th:text="${bet.noGoal}" />
+
+            <td th:text="${bet.HomeDraw}" />
+            <td th:text="${bet.AwayDraw}" />
+            <td th:text="${bet.HomeAway}" />
+
+            <td th:text="${bet.Home_Home}" />
+            <td th:text="${bet.Draw_Home}" />
+            <td th:text="${bet.Away_Home}" />
+            <td th:text="${bet.Home_Draw}" />
+            <td th:text="${bet.Draw_Draw}" />
+            <td th:text="${bet.Away_Draw}" />
+            <td th:text="${bet.Home_Away}" />
+            <td th:text="${bet.Draw_Away}" />
+            <td th:text="${bet.Away_Away}" />
+
+            <td th:text="${{bet.createdAt}}" />
+        </tbody>
+
+    </table>
+
+
+    <div class="row">
+        <div class="col-sm-6">
+            <div sd:pagination-summary="">info</div>
+        </div>
+        <div class="col-sm-6">
+            <nav class="pull-right">
+                <ul class="pagination" sd:pagination="full">
+                    <!-- Pagination created by SpringDataDialect, this content is just for mockup -->
+                    <li class="disabled"><a href="#" aria-label="Previous"><span aria-hidden="true">&laquo;</span></a></li>
+                    <li class="active"><a href="#">1 <span class="sr-only">(current)</span></a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
