@@ -59,7 +59,50 @@ DROP TABLE IF EXISTS `football_bet`;
 CREATE TABLE `football_bet` (
     `football_bet_id` int(11) NOT NULL AUTO_INCREMENT,
     `draw` decimal(5,2) DEFAULT NULL,
+    `over_0,5` decimal(5,2) DEFAULT NULL,
+    `over_1,5` decimal(5,2) DEFAULT NULL,
+    `over_2,5` decimal(5,2) DEFAULT NULL,
+    `over_3,5` decimal(5,2) DEFAULT NULL,
+    `over_4,5` decimal(5,2) DEFAULT NULL,
+    `over_5,5` decimal(5,2) DEFAULT NULL,
+    `over_6,5` decimal(5,2) DEFAULT NULL,
+    `over_7,5` decimal(5,2) DEFAULT NULL,
+    `under_0,5` decimal(5,2) DEFAULT NULL,
+    `under_1,5` decimal(5,2) DEFAULT NULL,
+    `under_2,5` decimal(5,2) DEFAULT NULL,
+    `under_3,5` decimal(5,2) DEFAULT NULL,
+    `under_4,5` decimal(5,2) DEFAULT NULL,
+    `under_5,5` decimal(5,2) DEFAULT NULL,
+    `under_6,5` decimal(5,2) DEFAULT NULL,
+    `under_7,5` decimal(5,2) DEFAULT NULL,
+    `GG` decimal(5,2) DEFAULT NULL,
+    `NG` decimal(5,2) DEFAULT NULL,
+    `1X` decimal(5,2) DEFAULT NULL,
+    `2X` decimal(5,2) DEFAULT NULL,
+    `12` decimal(5,2) DEFAULT NULL,
+    `1/1` decimal(5,2) DEFAULT NULL,
+    `X/1` decimal(5,2) DEFAULT NULL,
+    `2/1` decimal(5,2) DEFAULT NULL,
+    `1/X` decimal(5,2) DEFAULT NULL,
+    `X/X` decimal(5,2) DEFAULT NULL,
+    `2/X` decimal(5,2) DEFAULT NULL,
+    `1/2` decimal(5,2) DEFAULT NULL,
+    `X/2` decimal(5,2) DEFAULT NULL,
+    `2/2` decimal(5,2) DEFAULT NULL,
     FOREIGN KEY (`football_bet_id`) REFERENCES `bet` (`bet_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1;
+
+DROP TABLE IF EXISTS `basketball_bet`;
+CREATE TABLE `basketball_bet` (
+    `basketball_bet_id` int(11) NOT NULL AUTO_INCREMENT,
+    `draw` decimal(5,2) DEFAULT NULL,
+    `1/1` decimal(5,2) DEFAULT NULL,
+    `X/1` decimal(5,2) DEFAULT NULL,
+    `2/1` decimal(5,2) DEFAULT NULL,
+    `1/2` decimal(5,2) DEFAULT NULL,
+    `X/2` decimal(5,2) DEFAULT NULL,
+    `2/2` decimal(5,2) DEFAULT NULL,
+    FOREIGN KEY (`basketball_bet_id`) REFERENCES `bet` (`bet_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1;
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -71,35 +114,5 @@ ALTER TABLE `event` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ALTER TABLE `game` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ALTER TABLE `bet` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ALTER TABLE `football_bet` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+ALTER TABLE `basketball_bet` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-ALTER TABLE `football_bet`
-ADD `over_0,5` decimal(5,2) DEFAULT NULL,
-ADD `over_1,5` decimal(5,2) DEFAULT NULL,
-ADD `over_2,5` decimal(5,2) DEFAULT NULL,
-ADD `over_3,5` decimal(5,2) DEFAULT NULL,
-ADD `over_4,5` decimal(5,2) DEFAULT NULL,
-ADD `over_5,5` decimal(5,2) DEFAULT NULL,
-ADD `over_6,5` decimal(5,2) DEFAULT NULL,
-ADD `over_7,5` decimal(5,2) DEFAULT NULL,
-ADD `under_0,5` decimal(5,2) DEFAULT NULL,
-ADD `under_1,5` decimal(5,2) DEFAULT NULL,
-ADD `under_2,5` decimal(5,2) DEFAULT NULL,
-ADD `under_3,5` decimal(5,2) DEFAULT NULL,
-ADD `under_4,5` decimal(5,2) DEFAULT NULL,
-ADD `under_5,5` decimal(5,2) DEFAULT NULL,
-ADD `under_6,5` decimal(5,2) DEFAULT NULL,
-ADD `under_7,5` decimal(5,2) DEFAULT NULL,
-ADD `GG` decimal(5,2) DEFAULT NULL,
-ADD `NG` decimal(5,2) DEFAULT NULL,
-ADD `1X` decimal(5,2) DEFAULT NULL,
-ADD `2X` decimal(5,2) DEFAULT NULL,
-ADD `12` decimal(5,2) DEFAULT NULL,
-ADD `1/1` decimal(5,2) DEFAULT NULL,
-ADD `X/1` decimal(5,2) DEFAULT NULL,
-ADD `2/1` decimal(5,2) DEFAULT NULL,
-ADD `1/X` decimal(5,2) DEFAULT NULL,
-ADD `X/X` decimal(5,2) DEFAULT NULL,
-ADD `2/X` decimal(5,2) DEFAULT NULL,
-ADD `1/2` decimal(5,2) DEFAULT NULL,
-ADD `X/2` decimal(5,2) DEFAULT NULL,
-ADD `2/2` decimal(5,2) DEFAULT NULL;

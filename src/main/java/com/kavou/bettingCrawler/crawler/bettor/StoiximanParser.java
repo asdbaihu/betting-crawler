@@ -24,7 +24,7 @@ import java.util.*;
 @Component
 public class StoiximanParser implements Parser {
 
-    // StoiximanParser constants
+    // Stoiximan constants
     private static final String BETTOR_NAME = "Stoiximan";
     private static final String INDEX_PAGE_URL = "https://www.stoiximan.gr/";
 
@@ -36,9 +36,6 @@ public class StoiximanParser implements Parser {
     private Bet bet;
     private BigDecimal homeWin = null;
     private BigDecimal awayWin = null;
-
-    // football bet variables
-    private FootballBet footballBet;
 
     // lists to store the URL links
     private List<String> sportLinks = new ArrayList<>();
@@ -64,9 +61,6 @@ public class StoiximanParser implements Parser {
 
     @Autowired
     private BetRepository betRepository;
-
-    @Autowired
-    private FootballBetRepository footballBetRepository;
 
     @Override
     // connect ang fetch the html page from the Url given in the constructor
@@ -160,7 +154,9 @@ public class StoiximanParser implements Parser {
             DEBUGGING
              */
             // get football link ONLY
-            if(sportLink.contains("Soccer-FOOT/")) {
+            // if(sportLink.contains("Soccer-FOOT/")) {
+            if(sportLink.contains("Basketball-BASK/")) {
+            // if(sportLink.contains("Soccer-FOOT/") || sportLink.contains("Basketball-BASK/")) {
                 // add them to list
                 sportLinks.add(sportLink);
             }
@@ -247,7 +243,13 @@ public class StoiximanParser implements Parser {
                 if (!(     regionBody.contains("Μακροχρόνια")
                         || regionBody.contains("Νικητής")
                         || regionBody.contains("Ειδικά")
-                        || regionBody.contains("Προκριματικά"))
+                        || regionBody.contains("Προκριματικά")
+                        // Basketball
+                        || regionBody.contains("Πρόκριση")
+                        || regionBody.contains("Είσοδος")
+                        || regionBody.contains("Τερματισμός")
+                        || regionBody.contains("τελικό")
+                        || regionBody.contains("Σκορ"))
                         ) {
 
                     // System.out.println("regionBody "+regionBody);
@@ -300,7 +302,13 @@ public class StoiximanParser implements Parser {
             if (!(     checkForLongTermBets.contains("Μακροχρόνια")
                     || checkForLongTermBets.contains("Νικητής")
                     || checkForLongTermBets.contains("Ειδικά")
-                    || checkForLongTermBets.contains("Προκριματικά"))
+                    || checkForLongTermBets.contains("Προκριματικά")
+                    // Basketball
+                    || checkForLongTermBets.contains("Πρόκριση")
+                    || checkForLongTermBets.contains("Είσοδος")
+                    || checkForLongTermBets.contains("Τερματισμός")
+                    || checkForLongTermBets.contains("τελικό")
+                    || checkForLongTermBets.contains("Σκορ"))
                     ) {
 
                 // System.out.println("Event link (Inside StoiximanParser): "+eventLink);
@@ -317,9 +325,9 @@ public class StoiximanParser implements Parser {
 
             }
 
-            // if (eventLinks.size() == 2) {
-            //     break;
-            // }
+            if (eventLinks.size() == 5) {
+                break;
+            }
 
         }
 
@@ -371,8 +379,13 @@ public class StoiximanParser implements Parser {
         Element eventNameAsElement = doc.select(cssPathForEventName).first();
         String eventName = eventNameAsElement.text();
 
+        // sport
+        String cssPathForSportName = ".a8k.w div.mb h3";
+        String sportName = doc.select(cssPathForSportName).text();
+        Sport sportToCheck = sportRepository.getOneByName(sportName);
+
         // sport object to check if associated with the event
-        Event eventToCheck = eventRepository.getOneByName(eventName);
+        Event eventToCheck = eventRepository.getOneByNameAndSport(eventName, sportToCheck);
 
         // list with new games
         // new game is an game that is not contained in the database (associated with "eventToCheck")
@@ -473,6 +486,9 @@ public class StoiximanParser implements Parser {
     @Override
     public void fetchBetData(Document doc) {
 
+        homeWin = null;
+        awayWin = null;
+
         // data for creating BETS
         // Bet constructor is:
         // (BigDecimal homeWin, BigDecimal awayWin)
@@ -492,25 +508,31 @@ public class StoiximanParser implements Parser {
         // home and away win
         String cssPathFor1X2 = "[data-type='MRES'] .ma.f.a39, [data-type='MR12'] .ma.f.a39, [data-type='H2HT'] .ma.f.a39";
         Elements oddsAsElement = doc.select(cssPathFor1X2);
-        // home win is the first element
-        String homeWinAsString = oddsAsElement.first().text();
-        // away win is the last element
-        String awayWinAsString = oddsAsElement.last().text();
 
-        // Format bet data
-        // convert String to BigDecimal (homeWin, awayWin, ...)
-        homeWin = new BigDecimal(homeWinAsString);
-        awayWin = new BigDecimal(awayWinAsString);
+        if (oddsAsElement.size() > 0) {
+
+            // home win is the first element
+            String homeWinAsString = oddsAsElement.first().text();
+            // away win is the last element
+            String awayWinAsString = oddsAsElement.last().text();
+
+            // Format bet data
+            // convert String to BigDecimal (homeWin, awayWin, ...)
+            homeWin = new BigDecimal(homeWinAsString);
+            awayWin = new BigDecimal(awayWinAsString);
+        }
+
+        // System.out.println("Inside StoiximanParser (home win): "+homeWin);
+        // System.out.println("Inside StoiximanParser (away win): "+awayWin);
 
         // we get different bets for every sport so we call the appropriate method
         switch (sportName) {
             // football
             case "Ποδόσφαιρο":
                 fetchFootballBet(doc);
+            case "Μπάσκετ":
+                fetchBasketballBet(doc);
         }
-
-        // System.out.println("Inside StoiximanParser (home win): "+homeWinAsString);
-        // System.out.println("Inside StoiximanParser (away win): "+awayWinAsString);
 
     }
 
@@ -521,14 +543,22 @@ public class StoiximanParser implements Parser {
         Element opponentsAsElement = doc.select(cssPathForOpponents).first();
         String opponents = opponentsAsElement.text();
 
-        // get the event of the bet
+        // get the event of the bet (by name and sport)
         String cssPathForEvent = ".a1s ul.a8p li a";
         Element eventAsElement = doc.select(cssPathForEvent).last();
         String eventAsString = eventAsElement.text();
-        Event event = eventRepository.getOneByName(eventAsString);
+
+        // get the name of the sport
+        String cssPathForSportName = ".mb.a1s ul.a8p li a";
+        // sport is the second element (i=1)
+        Element sportNameAsElement = doc.select(cssPathForSportName).get(1);
+        String sportName = sportNameAsElement.text();
+        Sport sportOfEvent = sportRepository.getOneByName(sportName);
+
+        Event event = eventRepository.getOneByNameAndSport(eventAsString, sportOfEvent);
 
         // get the game of the bet (by name and event)
-        Game gameOfBet = null;
+        Game gameOfBet;
         try {
             gameOfBet = gameRepository.getOneByOpponentsAndEvent(opponents, event);
         } catch (Exception e) {
@@ -539,7 +569,7 @@ public class StoiximanParser implements Parser {
         // System.out.println(gameOfBet);
 
         // variables for creating FootballBet
-        footballBet = new FootballBet();
+        FootballBet footballBet = new FootballBet();
 
         // set home and away win
         footballBet.setHomeWin(homeWin);
@@ -589,6 +619,8 @@ public class StoiximanParser implements Parser {
         BigDecimal home_away = null;
         BigDecimal draw_away = null;
         BigDecimal away_away = null;
+
+        // CSS paths
 
         // 1) draw
         String cssPathFor1X2 = "[data-type='MRES'] .ma.f.a39, [data-type='MR12'] .ma.f.a39";
@@ -810,8 +842,8 @@ public class StoiximanParser implements Parser {
         // 4) goal goal - no goal
         Elements goalGoalNoGoalAsElement = doc.select(cssPathForGoalGoal);
 
-        String goalGoalAsString = null;
-        String noGoalAsString = null;
+        String goalGoalAsString;
+        String noGoalAsString;
 
         // if the double bet elements exists in the page
         if(goalGoalNoGoalAsElement.size() > 0) {
@@ -833,9 +865,9 @@ public class StoiximanParser implements Parser {
         // 5) double bet
         Elements doubleBetAsElements = doc.select(cssPathForDoubleBet);
 
-        String homeDrawAsString = null;
-        String awayDrawAsString = null;
-        String homeAwayAsString = null;
+        String homeDrawAsString;
+        String awayDrawAsString;
+        String homeAwayAsString;
 
         // if the double bet elements exists in the page
         if (doubleBetAsElements.size() > 0) {
@@ -861,15 +893,15 @@ public class StoiximanParser implements Parser {
         // 6) half time - final time score
         Elements halfFinalScoreAsElements = doc.select(cssPathForHalfFinalScore);
 
-        String home_homeAsString = null;
-        String home_drawAsString = null;
-        String home_awayAsString = null;
-        String draw_homeAsString = null;
-        String draw_drawAsString = null;
-        String draw_awayAsString = null;
-        String away_drawAsString = null;
-        String away_homeAsString = null;
-        String away_awayAsString = null;
+        String home_homeAsString;
+        String home_drawAsString;
+        String home_awayAsString;
+        String draw_homeAsString;
+        String draw_drawAsString;
+        String draw_awayAsString;
+        String away_drawAsString;
+        String away_homeAsString;
+        String away_awayAsString;
 
         // if the half full time score elements exists in the page
         if (halfFinalScoreAsElements.size() > 0) {
@@ -929,7 +961,142 @@ public class StoiximanParser implements Parser {
         footballBet.setGame(gameOfBet);
 
         // save bet
-        saveEntity(footballBet, footballBetRepository);
+        saveEntity(footballBet, betRepository);
+
+    }
+
+    public void fetchBasketballBet (Document doc) {
+
+        // get the name of opponents of the bet
+        String cssPathForOpponents = ".mb.a1s h3";
+        Element opponentsAsElement = doc.select(cssPathForOpponents).first();
+        String opponents = opponentsAsElement.text();
+
+        // get the event of the bet (by name and sport)
+        String cssPathForEvent = ".a1s ul.a8p li a";
+        Element eventAsElement = doc.select(cssPathForEvent).last();
+        String eventAsString = eventAsElement.text();
+
+        // get the name of the sport
+        String cssPathForSportName = ".mb.a1s ul.a8p li a";
+        // sport is the second element (i=1)
+        Element sportNameAsElement = doc.select(cssPathForSportName).get(1);
+        String sportName = sportNameAsElement.text();
+        Sport sportOfEvent = sportRepository.getOneByName(sportName);
+
+        Event event = eventRepository.getOneByNameAndSport(eventAsString, sportOfEvent);
+
+        // get the game of the bet (by name and event)
+        Game gameOfBet;
+        try {
+            gameOfBet = gameRepository.getOneByOpponentsAndEvent(opponents, event);
+        } catch (Exception e) {
+            throw new RuntimeException("Duplicate game name: "+ opponents +" to event: "+ eventAsString);
+        }
+
+        // print the game of bet
+        // System.out.println(gameOfBet);
+
+        // variables for creating FootballBet
+        BasketballBet basketballBet = new BasketballBet();
+
+        // set home and away win
+        basketballBet.setHomeWin(homeWin);
+        basketballBet.setAwayWin(awayWin);
+
+        // draw
+        BigDecimal draw = null;
+
+        // half - final score (1/1, X/1, 2/1, ...)
+        BigDecimal home_home = null;
+        BigDecimal draw_home = null;
+        BigDecimal away_home = null;
+        BigDecimal home_away = null;
+        BigDecimal draw_away = null;
+        BigDecimal away_away = null;
+
+        // CSS paths
+
+        // 1) draw
+        String cssPathFor1X2 = "[data-type='MRES'] .ma.f.a39, [data-type='MR12'] .ma.f.a39";
+
+        // 2) half time - final time score (1/1, X/1, ...)
+        String cssPathForHalfFinalScore = "[data-type='HTOT'] .ma.f.a39";
+
+        // fetch basketballBet bets
+
+        // 1) draw
+        Elements odds1X2AsElement = doc.select(cssPathFor1X2);
+        String drawAsString;
+
+        // check if there is odd for draw (draw exists only in Champions League event)
+        if (odds1X2AsElement.size() > 0) {
+            // draw is the middle (second) element of 3 elements
+            // i=0 is the first, i=1 is the second, i=2 is the third
+            drawAsString = odds1X2AsElement.get(1).text();
+
+            // convert String to BigDecimal
+            draw = new BigDecimal(drawAsString);
+        }
+        // System.out.println("Inside StoiximanParser (draw): "+drawAsString);
+
+        // set draw
+        basketballBet.setDraw(draw);
+
+        // 2) half time - final time score
+        Elements halfFinalScoreAsElements = doc.select(cssPathForHalfFinalScore);
+
+        String home_homeAsString;
+        String home_awayAsString;
+        String draw_homeAsString;
+        String draw_awayAsString;
+        String away_homeAsString;
+        String away_awayAsString;
+
+        // if the half full time score elements exists in the page
+        if (halfFinalScoreAsElements.size() > 0) {
+
+            // 1/1 is the first element (i=0)
+            home_homeAsString = doc.select(cssPathForHalfFinalScore).get(0).text();
+            home_home = new BigDecimal(home_homeAsString);
+
+            // X/1 is the second element (i=1)
+            draw_homeAsString = doc.select(cssPathForHalfFinalScore).get(1).text();
+            draw_home = new BigDecimal(draw_homeAsString);
+
+            // 2/1 is the third element (i=2)
+            away_homeAsString = doc.select(cssPathForHalfFinalScore).get(2).text();
+            away_home = new BigDecimal(away_homeAsString);
+
+            // 1/2 is the fourth element (i=3)
+            home_awayAsString = doc.select(cssPathForHalfFinalScore).get(3).text();
+            home_away = new BigDecimal(home_awayAsString);
+
+            // X/2 is the sixth element (i=4)
+            draw_awayAsString = doc.select(cssPathForHalfFinalScore).get(4).text();
+            draw_away = new BigDecimal(draw_awayAsString);
+
+            // 2/2 is the last element (i=5
+            away_awayAsString = doc.select(cssPathForHalfFinalScore).get(5).text();
+            away_away = new BigDecimal(away_awayAsString);
+
+        }
+
+        // set BigDecimal values to football bet
+        basketballBet.setHome_Home(home_home);
+        basketballBet.setHome_Away(home_away);
+        basketballBet.setAway_Home(away_home);
+        basketballBet.setDraw_Away(draw_away);
+        basketballBet.setDraw_Home(draw_home);
+        basketballBet.setAway_Away(away_away);
+
+        // ALL data has been set to the football bet object
+
+        // associate game with bets
+        basketballBet.setGame(gameOfBet);
+
+        // save bet
+        saveEntity(basketballBet, betRepository);
 
     }
 
@@ -1027,14 +1194,6 @@ public class StoiximanParser implements Parser {
 
     public void setBet(Bet bet) {
         this.bet = bet;
-    }
-
-    public FootballBet getFootballBet() {
-        return footballBet;
-    }
-
-    public void setFootballBet(FootballBet footballBet) {
-        this.footballBet = footballBet;
     }
 
     public BettorRepository getBettorRepository() {

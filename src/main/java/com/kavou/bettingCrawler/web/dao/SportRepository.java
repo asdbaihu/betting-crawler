@@ -11,7 +11,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface SportRepository extends JpaRepository<Sport, Integer> {
 
     boolean existsByNameAndBettor(String name, Bettor bettor);
+
     Sport getOneByName(String name);
     Sport getOneById(int sportId);
+
     Page<Sport> findAllByBettor(Pageable page, Bettor bettor);
 }

@@ -9,7 +9,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface EventRepository extends JpaRepository<Event, Integer> {
 
     boolean existsByNameAndSport(String name, Sport sport);
-    Event getOneByName(String name);
+
+    Event getOneByNameAndSport(String name, Sport sport);
     Event getOneById(int eventId);
+
     Page<Event> findAllBySport(Pageable page, Sport sport);
 }

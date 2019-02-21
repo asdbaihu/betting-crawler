@@ -20,7 +20,7 @@ public class EventController {
     private EventService eventService;
 
     @Autowired
-    SportService sportService;
+    private SportService sportService;
 
     @GetMapping("/events")
     public String getEvents(@RequestParam("sportId") int sportId, Model theModel,  @SortDefault("name") Pageable page) {
