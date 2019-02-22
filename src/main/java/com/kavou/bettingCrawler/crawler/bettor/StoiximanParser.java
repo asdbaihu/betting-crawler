@@ -155,8 +155,8 @@ public class StoiximanParser implements Parser {
              */
             // get football link ONLY
             // if(sportLink.contains("Soccer-FOOT/")) {
-            if(sportLink.contains("Basketball-BASK/")) {
-            // if(sportLink.contains("Soccer-FOOT/") || sportLink.contains("Basketball-BASK/")) {
+            // if(sportLink.contains("Basketball-BASK/")) {
+            if(sportLink.contains("Soccer-FOOT/") || sportLink.contains("Basketball-BASK/")) {
                 // add them to list
                 sportLinks.add(sportLink);
             }
@@ -325,9 +325,9 @@ public class StoiximanParser implements Parser {
 
             }
 
-            if (eventLinks.size() == 5) {
-                break;
-            }
+            // if (eventLinks.size() == 5) {
+            //     break;
+            // }
 
         }
 

@@ -54,7 +54,7 @@ public class StoiximanApp {
         if (crawlForData) {
 
             // crawling started
-            double startTime = System.nanoTime();
+            float startTime = System.nanoTime();
 
             // list with the links of pages that did not loaded correctly
             List<String> pagesNotLoaded = new ArrayList<>();
@@ -130,7 +130,7 @@ public class StoiximanApp {
                         // visit every match
                         for (String gameLink : gameLinks) {
 
-                            System.out.println("-----------> Game link: "+gameLink);
+                            // System.out.println("-----------> Game link: "+gameLink);
 
                             Document gameDocument = stoiximanParser.connectAndFetchPage(gameLink);
 
@@ -164,9 +164,9 @@ public class StoiximanApp {
             System.out.println(ANSI_GREEN + "\nCRAWLING ENDED\n" + ANSI_RESET);
 
             // crawling finished
-            double endTime = System.nanoTime();
+            float endTime = System.nanoTime();
             //Time in nanoseconds
-            double totalTime = endTime - startTime;
+            float totalTime = endTime - startTime;
             //Time in seconds
             double totalTimeInSec = totalTime / 1000000000.0;
 
