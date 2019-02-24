@@ -32,6 +32,12 @@ public class StoiximanParser implements Parser {
     private Bettor bettor;
     private String bettorName = getBettorName();
 
+    // sport name we are crawling
+    private String sportName;
+
+    // game of the bet we are crawling
+    private Game gameOfBet;
+
     // bet variables
     private Bet bet;
     private BigDecimal homeWin = null;
@@ -46,7 +52,6 @@ public class StoiximanParser implements Parser {
     private static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36";
 
     // Dependency injections
-
     @Autowired
     private BettorRepository bettorRepository;
 
@@ -125,20 +130,20 @@ public class StoiximanParser implements Parser {
         Sport newSport;
 
         // sport name to check
-        String sportName;
+        String sportNameToCheck;
 
         for (int i=0; i<sportLinksAsElement.size(); i++) {
 
             // name of sport
-            sportName = sportNamesAsElement.get(i).text();
+            sportNameToCheck = sportNamesAsElement.get(i).text();
 
             // check (by sport name and bettor) if sport exists in database
-            boolean sportExists = sportRepository.existsByNameAndBettor(sportName, bettorToCheck);
+            boolean sportExists = sportRepository.existsByNameAndBettor(sportNameToCheck, bettorToCheck);
 
             // if sport does not exists in database
             if (!sportExists) {
                 // create it
-                newSport = new Sport(sportName);
+                newSport = new Sport(sportNameToCheck);
                 // associate it with bettor
                 newSport.setBettor(bettorToCheck);
                 // add the sport to the new sports list
@@ -156,7 +161,8 @@ public class StoiximanParser implements Parser {
             // get football link ONLY
             // if(sportLink.contains("Soccer-FOOT/")) {
             // if(sportLink.contains("Basketball-BASK/")) {
-            if(sportLink.contains("Soccer-FOOT/") || sportLink.contains("Basketball-BASK/")) {
+            // if(sportLink.contains("Tennis-TENN/")) {
+            if(sportLink.contains("Soccer-FOOT/") || sportLink.contains("Basketball-BASK/") || sportLink.contains("Tennis-TENN/")) {
                 // add them to list
                 sportLinks.add(sportLink);
             }
@@ -205,7 +211,7 @@ public class StoiximanParser implements Parser {
         Element sportNameAsElement = doc.select(cssPathForSportName).first();
 
         // name of sport to check if associated with the event
-        String sportName = sportNameAsElement.text();
+        sportName = sportNameAsElement.text();
 
         // sport object to check if associated with the event
         Sport sportToCheck = sportRepository.getOneByName(sportName);
@@ -495,19 +501,38 @@ public class StoiximanParser implements Parser {
         /*
         css path which contains [data-type='MRES'] or [data-type='MR12'] is for sports
         that has 3 different results (1, X, 2), like football, rugby, ...
-        css path which contains [data-type='H2HT'] is for sports
+        css path which contains [data-type='H2HT'] or [data-type='HTOH_0'] is for sports
         that has 2 different results (1, 2) like tennis, mma, basketball, ...
         */
 
-        // get the name of the sport
-        String cssPathForSportName = ".mb.a1s ul.a8p li a";
-        // sport is the second element (i=1)
-        Element sportNameAsElement = doc.select(cssPathForSportName).get(1);
-        String sportName = sportNameAsElement.text();
-
         // home and away win
-        String cssPathFor1X2 = "[data-type='MRES'] .ma.f.a39, [data-type='MR12'] .ma.f.a39, [data-type='H2HT'] .ma.f.a39";
+        String cssPathFor1X2 = " [data-type='MRES'] .ma.f.a39, [data-type='MR12'] .ma.f.a39, " +
+                               " [data-type='H2HT'] .ma.f.a39, [data-type='HTOH_0'] .ma.f.a39";
         Elements oddsAsElement = doc.select(cssPathFor1X2);
+
+        // get the name of opponents of the bet
+        String cssPathForOpponents = ".mb.a1s h3";
+        Element opponentsAsElement = doc.select(cssPathForOpponents).first();
+        String opponents = opponentsAsElement.text();
+
+        // get the event of the bet (by name and sport)
+        String cssPathForEvent = ".a1s ul.a8p li a";
+        Element eventAsElement = doc.select(cssPathForEvent).last();
+        String eventAsString = eventAsElement.text();
+
+        Sport sportOfEvent = sportRepository.getOneByName(sportName);
+
+        Event event = eventRepository.getOneByNameAndSport(eventAsString, sportOfEvent);
+
+        // get the game of the bet (by name and event)
+        try {
+            gameOfBet = gameRepository.getOneByOpponentsAndEvent(opponents, event);
+        } catch (Exception e) {
+            throw new RuntimeException("Duplicate game name: "+ opponents +" to event: "+ eventAsString);
+        }
+
+        // print the game of bet
+        // System.out.println(gameOfBet);
 
         if (oddsAsElement.size() > 0) {
 
@@ -532,41 +557,13 @@ public class StoiximanParser implements Parser {
                 fetchFootballBet(doc);
             case "Μπάσκετ":
                 fetchBasketballBet(doc);
+            case "Τένις":
+                fetchTennisBet(doc);
         }
 
     }
 
     public void fetchFootballBet(Document doc) {
-
-        // get the name of opponents of the bet
-        String cssPathForOpponents = ".mb.a1s h3";
-        Element opponentsAsElement = doc.select(cssPathForOpponents).first();
-        String opponents = opponentsAsElement.text();
-
-        // get the event of the bet (by name and sport)
-        String cssPathForEvent = ".a1s ul.a8p li a";
-        Element eventAsElement = doc.select(cssPathForEvent).last();
-        String eventAsString = eventAsElement.text();
-
-        // get the name of the sport
-        String cssPathForSportName = ".mb.a1s ul.a8p li a";
-        // sport is the second element (i=1)
-        Element sportNameAsElement = doc.select(cssPathForSportName).get(1);
-        String sportName = sportNameAsElement.text();
-        Sport sportOfEvent = sportRepository.getOneByName(sportName);
-
-        Event event = eventRepository.getOneByNameAndSport(eventAsString, sportOfEvent);
-
-        // get the game of the bet (by name and event)
-        Game gameOfBet;
-        try {
-            gameOfBet = gameRepository.getOneByOpponentsAndEvent(opponents, event);
-        } catch (Exception e) {
-            throw new RuntimeException("Duplicate game name: "+ opponents +" to event: "+ eventAsString);
-        }
-
-        // print the game of bet
-        // System.out.println(gameOfBet);
 
         // variables for creating FootballBet
         FootballBet footballBet = new FootballBet();
@@ -967,36 +964,6 @@ public class StoiximanParser implements Parser {
 
     public void fetchBasketballBet (Document doc) {
 
-        // get the name of opponents of the bet
-        String cssPathForOpponents = ".mb.a1s h3";
-        Element opponentsAsElement = doc.select(cssPathForOpponents).first();
-        String opponents = opponentsAsElement.text();
-
-        // get the event of the bet (by name and sport)
-        String cssPathForEvent = ".a1s ul.a8p li a";
-        Element eventAsElement = doc.select(cssPathForEvent).last();
-        String eventAsString = eventAsElement.text();
-
-        // get the name of the sport
-        String cssPathForSportName = ".mb.a1s ul.a8p li a";
-        // sport is the second element (i=1)
-        Element sportNameAsElement = doc.select(cssPathForSportName).get(1);
-        String sportName = sportNameAsElement.text();
-        Sport sportOfEvent = sportRepository.getOneByName(sportName);
-
-        Event event = eventRepository.getOneByNameAndSport(eventAsString, sportOfEvent);
-
-        // get the game of the bet (by name and event)
-        Game gameOfBet;
-        try {
-            gameOfBet = gameRepository.getOneByOpponentsAndEvent(opponents, event);
-        } catch (Exception e) {
-            throw new RuntimeException("Duplicate game name: "+ opponents +" to event: "+ eventAsString);
-        }
-
-        // print the game of bet
-        // System.out.println(gameOfBet);
-
         // variables for creating FootballBet
         BasketballBet basketballBet = new BasketballBet();
 
@@ -1097,6 +1064,112 @@ public class StoiximanParser implements Parser {
 
         // save bet
         saveEntity(basketballBet, betRepository);
+
+    }
+
+    public void fetchTennisBet(Document doc) {
+
+        // variables for creating FootballBet
+        TennisBet tennisBet = new TennisBet();
+
+        // home winner set 1
+        BigDecimal homeWinnerSet1 = null;
+        // away winner set 1
+        BigDecimal awayWinnerSet1 = null;
+
+        // 2-0 set score
+        BigDecimal Two_Zero = null;
+        // 0-2 set score
+        BigDecimal Zero_Two = null;
+        // 2-1 set score
+        BigDecimal Two_One = null;
+        // 1-2 set score
+        BigDecimal One_Two = null;
+
+        // set home and away win
+        tennisBet.setHomeWin(homeWin);
+        tennisBet.setAwayWin(awayWin);
+
+        // CSS paths
+
+        // 1) winner of set 1
+        String cssPathForWinnerSet1 = "[data-type='STWN_1'] .ma.f.a39";
+
+        // 2) set score (2-0, 2-1, 0-2, 1-2)
+        String cssPathForSetScore = "[data-type='BTOF'] .ma.f.a39";
+
+        // fetch tennis bets
+
+        // 1) winner of set 1
+        Elements winnerSet1AsElement = doc.select(cssPathForWinnerSet1);
+
+        // if bets exists
+        if (winnerSet1AsElement.size() > 0) {
+
+            // home player wins set 1
+            String homeWinnerAsString = winnerSet1AsElement.get(0).text();
+            // System.out.println("Inside StoiximanParser (homeWinnerAsString): "+homeWinnerAsString);
+
+            // away player wins set 1
+            String awayWinnerAsString = winnerSet1AsElement.get(1).text();
+            // System.out.println("Inside StoiximanParser (awayWinnerAsString): "+awayWinnerAsString);
+
+            // convert String to BigDecimal
+            homeWinnerSet1= new BigDecimal(homeWinnerAsString);
+            awayWinnerSet1= new BigDecimal(awayWinnerAsString);
+        }
+
+        // set home winner at set 1
+        tennisBet.setHomeWinnerSet1(homeWinnerSet1);
+        // set away winner at set 1
+        tennisBet.setAwayWinnerSet1(awayWinnerSet1);
+
+        // 2) set score
+        Elements setScoreAsElement = doc.select(cssPathForSetScore);
+
+        // if bets exists
+        if (setScoreAsElement.size() > 0) {
+
+            // 2-0 score
+            String Two_Zero_asString = setScoreAsElement.get(0).text();
+            // System.out.println("Inside StoiximanParser (Two_Zero_asString): "+Two_Zero_asString);
+
+            // 2-1 score
+            String Two_One_asString = setScoreAsElement.get(1).text();
+            // System.out.println("Inside StoiximanParser (Two_One_asString): "+Two_One_asString);
+
+            // 0-2 score
+            String Zero_Two_asString = setScoreAsElement.get(2).text();
+            // System.out.println("Inside StoiximanParser (Zero_Two_asString): "+Zero_Two_asString);
+
+            // 1-2
+            String One_Two_asString = setScoreAsElement.get(3).text();
+            // System.out.println("Inside StoiximanParser (One_Two_asString): "+One_Two_asString);
+
+            // convert String to BigDecimal
+            Two_Zero= new BigDecimal(Two_Zero_asString);
+            Zero_Two = new BigDecimal(Zero_Two_asString);
+            Two_One= new BigDecimal(Two_One_asString);
+            One_Two = new BigDecimal(One_Two_asString);
+
+        }
+
+        // set 2-0
+        tennisBet.setTwo_Zero(Two_Zero);
+        // set 0-2
+        tennisBet.setZero_Two(Zero_Two);
+        // set 2-1
+        tennisBet.setTwo_One(Two_One);
+        // set 1-2
+        tennisBet.setOne_Two(One_Two);
+
+        // ALL data has been set to the tennis bet object
+
+        // associate game with bets
+        tennisBet.setGame(gameOfBet);
+
+        // save bet
+        saveEntity(tennisBet, betRepository);
 
     }
 
@@ -1226,6 +1299,14 @@ public class StoiximanParser implements Parser {
 
     public void setBetRepository(BetRepository betRepository) {
         this.betRepository = betRepository;
+    }
+
+    public String getSportName() {
+        return sportName;
+    }
+
+    public void setSportName(String sportName) {
+        this.sportName = sportName;
     }
 
     // toString

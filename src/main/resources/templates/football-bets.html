@@ -50,40 +50,40 @@
                 <th scope="col">X</th>
                 <th scope="col">2</th>
 
-                <th th:if="${betsList[0].over0_5 != null}" scope="col">Over 0,5</th>
-                <th th:if="${betsList[0].over1_5 != null}" scope="col">Over 1,5</th>
-                <th th:if="${betsList[0].over2_5 != null}" scope="col">Over 2,5</th>
-                <th th:if="${betsList[0].over3_5 != null}" scope="col">Over 3,5</th>
-                <th th:if="${betsList[0].over4_5 != null}" scope="col">Over 4,5</th>
-                <th th:if="${betsList[0].over5_5 != null}" scope="col">Over 5,5</th>
-                <th th:if="${betsList[0].over6_5 != null}" scope="col">Over 6,5</th>
-                <th th:if="${betsList[0].over7_5 != null}" scope="col">Over 7,5</th>
+                <th scope="col">Over 0,5</th>
+                <th scope="col">Over 1,5</th>
+                <th scope="col">Over 2,5</th>
+                <th scope="col">Over 3,5</th>
+                <th scope="col">Over 4,5</th>
+                <th scope="col">Over 5,5</th>
+                <th scope="col">Over 6,5</th>
+                <th scope="col">Over 7,5</th>
 
-                <th th:if="${betsList[0].under0_5 != null}" scope="col">Under 0,5</th>
-                <th th:if="${betsList[0].under1_5 != null}" scope="col">Under 1,5</th>
-                <th th:if="${betsList[0].under2_5 != null}" scope="col">Under 2,5</th>
-                <th th:if="${betsList[0].under3_5 != null}" scope="col">Under 3,5</th>
-                <th th:if="${betsList[0].under4_5 != null}" scope="col">Under 4,5</th>
-                <th th:if="${betsList[0].under5_5 != null}" scope="col">Under 5,5</th>
-                <th th:if="${betsList[0].under6_5 != null}" scope="col">Under 6,5</th>
-                <th th:if="${betsList[0].under7_5 != null}" scope="col">Under 7,5</th>
+                <th scope="col">Under 0,5</th>
+                <th scope="col">Under 1,5</th>
+                <th scope="col">Under 2,5</th>
+                <th scope="col">Under 3,5</th>
+                <th scope="col">Under 4,5</th>
+                <th scope="col">Under 5,5</th>
+                <th scope="col">Under 6,5</th>
+                <th scope="col">Under 7,5</th>
 
-                <th th:if="${betsList[0].goalGoal != null}" scope="col">Goal Goal</th>
-                <th th:if="${betsList[0].noGoal != null}" scope="col">No Goal</th>
+                <th scope="col">Goal Goal</th>
+                <th scope="col">No Goal</th>
 
-                <th th:if="${betsList[0].HomeDraw != null}" scope="col">1X</th>
-                <th th:if="${betsList[0].Draw_Home != null}" scope="col">2X</th>
-                <th th:if="${betsList[0].HomeAway != null}" scope="col">12</th>
+                <th scope="col">1X</th>
+                <th scope="col">2X</th>
+                <th scope="col">12</th>
 
-                <th th:if="${betsList[0].Home_Home != null}" scope="col">1/1</th>
-                <th th:if="${betsList[0].Draw_Home != null}" scope="col">X/1</th>
-                <th th:if="${betsList[0].Away_Home != null}" scope="col">2/1</th>
-                <th th:if="${betsList[0].Home_Draw != null}" scope="col">1/X</th>
-                <th th:if="${betsList[0].Draw_Draw != null}" scope="col">X/X</th>
-                <th th:if="${betsList[0].Away_Draw != null}" scope="col">2/X</th>
-                <th th:if="${betsList[0].Home_Away != null}" scope="col">1/2</th>
-                <th th:if="${betsList[0].Draw_Away != null}" scope="col">X/2</th>
-                <th th:if="${betsList[0].Away_Away != null}" scope="col">2/2</th>
+                <th scope="col">1/1</th>
+                <th scope="col">X/1</th>
+                <th scope="col">2/1</th>
+                <th scope="col">1/X</th>
+                <th scope="col">X/X</th>
+                <th scope="col">2/X</th>
+                <th scope="col">1/2</th>
+                <th scope="col">X/2</th>
+                <th scope="col">2/2</th>
 
                 <th scope="col">Created at</th>
 
@@ -96,40 +96,40 @@
             <td th:text="${bet.draw}" />
             <td th:text="${bet.awayWin}" />
 
-            <td th:if="${bet.over0_5 != null}" th:text="${bet.over0_5}" />
-            <td th:if="${bet.over1_5 != null}" th:text="${bet.over1_5}" />
-            <td th:if="${bet.over2_5 != null}" th:text="${bet.over2_5}" />
-            <td th:if="${bet.over3_5 != null}" th:text="${bet.over3_5}" />
-            <td th:if="${bet.over4_5 != null}" th:text="${bet.over4_5}" />
-            <td th:if="${bet.over5_5 != null}" th:text="${bet.over5_5}" />
-            <td th:if="${bet.over6_5 != null}" th:text="${bet.over6_5}" />
-            <td th:if="${bet.over7_5 != null}" th:text="${bet.over7_5}" />
+            <td th:text="${bet.over0_5}" />
+            <td th:text="${bet.over1_5}" />
+            <td th:text="${bet.over2_5}" />
+            <td th:text="${bet.over3_5}" />
+            <td th:text="${bet.over4_5}" />
+            <td th:text="${bet.over5_5}" />
+            <td th:text="${bet.over6_5}" />
+            <td th:text="${bet.over7_5}" />
 
-            <td th:if="${bet.under0_5 != null}" th:text="${bet.under0_5}" />
-            <td th:if="${bet.under1_5 != null}" th:text="${bet.under1_5}" />
-            <td th:if="${bet.under2_5 != null}" th:text="${bet.under2_5}" />
-            <td th:if="${bet.under3_5 != null}" th:text="${bet.under3_5}" />
-            <td th:if="${bet.under4_5 != null}" th:text="${bet.under4_5}" />
-            <td th:if="${bet.under5_5 != null}" th:text="${bet.under5_5}" />
-            <td th:if="${bet.under6_5 != null}" th:text="${bet.under6_5}" />
-            <td th:if="${bet.under7_5 != null}" th:text="${bet.under7_5}" />
+            <td th:text="${bet.under0_5}" />
+            <td th:text="${bet.under1_5}" />
+            <td th:text="${bet.under2_5}" />
+            <td th:text="${bet.under3_5}" />
+            <td th:text="${bet.under4_5}" />
+            <td th:text="${bet.under5_5}" />
+            <td th:text="${bet.under6_5}" />
+            <td th:text="${bet.under7_5}" />
 
-            <td th:if="${bet.goalGoal != null}" th:text="${bet.goalGoal}" />
-            <td th:if="${bet.noGoal != null}" th:text="${bet.noGoal}" />
+            <td th:text="${bet.goalGoal}" />
+            <td th:text="${bet.noGoal}" />
 
-            <td th:if="${bet.HomeDraw != null}" th:text="${bet.HomeDraw}" />
-            <td th:if="${bet.AwayDraw != null}" th:text="${bet.AwayDraw}" />
-            <td th:if="${bet.HomeAway != null}" th:text="${bet.HomeAway}" />
+            <td th:text="${bet.HomeDraw}" />
+            <td th:text="${bet.AwayDraw}" />
+            <td th:text="${bet.HomeAway}" />
 
-            <td th:if="${bet.Home_Home != null}" th:text="${bet.Home_Home}" />
-            <td th:if="${bet.Draw_Home != null}" th:text="${bet.Draw_Home}" />
-            <td th:if="${bet.Away_Home != null}" th:text="${bet.Away_Home}" />
-            <td th:if="${bet.Home_Draw != null}" th:text="${bet.Home_Draw}" />
-            <td th:if="${bet.Draw_Draw != null}" th:text="${bet.Draw_Draw}" />
-            <td th:if="${bet.Away_Draw != null}" th:text="${bet.Away_Draw}" />
-            <td th:if="${bet.Home_Away != null}" th:text="${bet.Home_Away}" />
-            <td th:if="${bet.Draw_Away != null}" th:text="${bet.Draw_Away}" />
-            <td th:if="${bet.Away_Away != null}" th:text="${bet.Away_Away}" />
+            <td th:text="${bet.Home_Home}" />
+            <td th:text="${bet.Draw_Home}" />
+            <td th:text="${bet.Away_Home}" />
+            <td th:text="${bet.Home_Draw}" />
+            <td th:text="${bet.Draw_Draw}" />
+            <td th:text="${bet.Away_Draw}" />
+            <td th:text="${bet.Home_Away}" />
+            <td th:text="${bet.Draw_Away}" />
+            <td th:text="${bet.Away_Away}" />
 
             <td th:text="${{bet.createdAt}}" />
         </tbody>

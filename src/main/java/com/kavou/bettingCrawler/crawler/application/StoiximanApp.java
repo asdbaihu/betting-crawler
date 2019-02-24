@@ -39,7 +39,8 @@ public class StoiximanApp {
         // get the bean for StoiximanParser
         StoiximanParser stoiximanParser = context.getBean(StoiximanParser.class);
 
-        // give user the choice to crawl for data
+        // give user the choice to crawl for data or stay in server mode
+
         System.out.println(ANSI_RED+"\nApplication is now running in server mode ... Press 1 to start extracting data from the web. "+ANSI_RESET);
         boolean crawlForData;
         Scanner in = new Scanner(System.in);
@@ -104,7 +105,7 @@ public class StoiximanApp {
 
                 // progress bar
                 int max = eventLinks.size();
-                try (ProgressBar bar = new ProgressBar("Progress", max)) {
+                try (ProgressBar bar = new ProgressBar("Fetching data for " + stoiximanParser.getSportName(), max)) {
 
                     // visit every event
                     for (String eventLink : eventLinks) {

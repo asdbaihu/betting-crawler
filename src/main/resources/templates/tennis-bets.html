@@ -47,15 +47,14 @@
         <thead>
             <tr>
                 <th scope="col">1</th>
-                <th scope="col">X</th>
                 <th scope="col">2</th>
 
-                <th scope="col">1/1</th>
-                <th scope="col">X/1</th>
-                <th scope="col">2/1</th>
-                <th scope="col">1/2</th>
-                <th scope="col">X/2</th>
-                <th scope="col">2/2</th>
+                <th scope="col">Γηπεδούχος νικητής Σετ 1</th>
+                <th scope="col">Φιλοξενούμενος νικητής Σετ 1</th>
+                <th scope="col">2-0 (Σετ Σκορ)</th>
+                <th scope="col">2-1 (Σετ Σκορ)</th>
+                <th scope="col">0-2 (Σετ Σκορ)</th>
+                <th scope="col">1-2 (Σετ Σκορ)</th>
 
                 <th scope="col">Created at</th>
 
@@ -65,15 +64,14 @@
         <tbody th:each="bet : ${bets}">
 
             <td th:text="${bet.homeWin}" />
-            <td th:text="${bet.draw}" />
             <td th:text="${bet.awayWin}" />
 
-            <td th:text="${bet.Home_Home}" />
-            <td th:text="${bet.Draw_Home}" />
-            <td th:text="${bet.Away_Home}" />
-            <td th:text="${bet.Home_Away}" />
-            <td th:text="${bet.Draw_Away}" />
-            <td th:text="${bet.Away_Away}" />
+            <td th:text="${bet.homeWinnerSet1}" />
+            <td th:text="${bet.awayWinnerSet1}" />
+            <td th:text="${bet.Two_Zero}" />
+            <td th:text="${bet.Two_One}" />
+            <td th:text="${bet.Zero_Two}" />
+            <td th:text="${bet.One_Two}" />
 
             <td th:text="${{bet.createdAt}}" />
         </tbody>

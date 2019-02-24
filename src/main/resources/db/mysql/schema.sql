@@ -105,6 +105,18 @@ CREATE TABLE `basketball_bet` (
     FOREIGN KEY (`basketball_bet_id`) REFERENCES `bet` (`bet_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1;
 
+DROP TABLE IF EXISTS `tennis_bet`;
+CREATE TABLE `tennis_bet` (
+    `tennis_bet_id` int(11) NOT NULL AUTO_INCREMENT,
+    `home_winner_set_1` decimal(5,2) DEFAULT NULL,
+    `away_winner_set_1` decimal(5,2) DEFAULT NULL,
+    `2-0` decimal(5,2) DEFAULT NULL,
+    `2-1` decimal(5,2) DEFAULT NULL,
+    `0-2` decimal(5,2) DEFAULT NULL,
+    `1-2` decimal(5,2) DEFAULT NULL,
+    FOREIGN KEY (`tennis_bet_id`) REFERENCES `bet` (`bet_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1;
+
 SET FOREIGN_KEY_CHECKS = 1;
 
 ALTER DATABASE `betting_crawler` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

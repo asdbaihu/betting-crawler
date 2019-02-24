@@ -7,6 +7,7 @@ import com.kavou.bettingCrawler.web.entity.Sport;
 import com.kavou.bettingCrawler.web.service.BasketballBetService;
 import com.kavou.bettingCrawler.web.service.FootballBetService;
 import com.kavou.bettingCrawler.web.service.GameService;
+import com.kavou.bettingCrawler.web.service.TennisBetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +30,9 @@ public class BetController {
     @Autowired
     private BasketballBetService basketballBetService;
 
+    @Autowired
+    private TennisBetService tennisBetService;
+
     @GetMapping("/bets")
     private String getBetsByCategory(@RequestParam("gameId") int gameId, Model model, Pageable page) {
 
@@ -44,6 +48,7 @@ public class BetController {
 
         // return the appropriate page depending on sport name
         switch (sportName) {
+
             case "Ποδόσφαιρο":
 
                 // get the bets of the game
@@ -77,6 +82,23 @@ public class BetController {
                 model.addAttribute("game", game);
 
                 return "basketball-bets";
+
+            case "Τένις":
+
+                // get the bets of the game
+                Page<Bet> tennisBets = tennisBetService.findAllByGame(page, game);
+
+                // create a list with the bets
+                List<Bet> tennisBetsList = tennisBets.getContent();
+
+                // add bets list to model
+                model.addAttribute("bets", tennisBets);
+                // add bets list to model
+                model.addAttribute("betsList", tennisBetsList);
+                // add game to model
+                model.addAttribute("game", game);
+
+                return "tennis-bets";
         }
 
         return null;
