@@ -27,7 +27,7 @@ JDBC URL: jdbc:h2~/betting_crawler
 Usename:  sa
 Password: <Leave this field empty>
 ```
-Or you can access the frontend visiting: http://localhost:8080
+Or you can access a sample webpage visiting: http://localhost:8080
 
 ## Screenshots
 Sample data created by Betting Crawler and saved in (H2) database.
