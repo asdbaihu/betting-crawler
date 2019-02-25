@@ -14,6 +14,12 @@ cd betting-crawler
 java -jar target/*.jar
 ```
 
+Or you can run it from Maven directly using the Spring Boot Maven plugin. If you do this it will pick up changes that you make in the project immediately (changes to Java source files require a compile as well - most people use an IDE for this):
+
+```
+./mvnw spring-boot:run
+```
+
 You can then access the embedded database here: http://localhost:8080/h2-console using the credentials
 
 ```
@@ -21,13 +27,7 @@ JDBC URL: jdbc:h2~/betting_crawler
 Usename:  sa
 Password: <Leave this field empty>
 ```
-
-
-Or you can run it from Maven directly using the Spring Boot Maven plugin. If you do this it will pick up changes that you make in the project immediately (changes to Java source files require a compile as well - most people use an IDE for this):
-
-```
-./mvnw spring-boot:run
-```
+Or you can access the frontend visiting: http://localhost:8080
 
 ## Screenshots
 Sample data created by Betting Crawler and saved in (H2) database.
