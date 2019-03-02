@@ -214,7 +214,7 @@ public class StoiximanParser implements Parser {
         sportName = sportNameAsElement.text();
 
         // sport object to check if associated with the event
-        Sport sportToCheck = sportRepository.getOneByName(sportName);
+        Sport sportToCheck = sportRepository.getOneByNameAndBettor(sportName, bettor);
 
         // list with new events
         // new event is an event that is not contained in the database (associated with "sportToCheck")
@@ -229,14 +229,14 @@ public class StoiximanParser implements Parser {
         // loop through regions
         for (int j=0; j<regionsAsElement.size(); j++) {
 
-            // second part of the name as element (regionBody)
-            // Premier League, Championship, EFL Cup, ...
-            Elements childrenOfRegion = regionsAsElement.get(j).children();
-
             // regionHead as string
             String regionHead = regionHeadAsElement.get(j).text();
 
             // System.out.println("regionHead "+regionHead);
+
+            // second part of the name as element (regionBody)
+            // Premier League, Championship, EFL Cup, ...
+            Elements childrenOfRegion = regionsAsElement.get(j).children();
 
             // loop through region bodies
             for (int i=0; i<childrenOfRegion.size(); i++) {
@@ -388,7 +388,7 @@ public class StoiximanParser implements Parser {
         // sport
         String cssPathForSportName = ".a8k.w div.mb h3";
         String sportName = doc.select(cssPathForSportName).text();
-        Sport sportToCheck = sportRepository.getOneByName(sportName);
+        Sport sportToCheck = sportRepository.getOneByNameAndBettor(sportName, bettor);
 
         // sport object to check if associated with the event
         Event eventToCheck = eventRepository.getOneByNameAndSport(eventName, sportToCheck);
@@ -504,7 +504,6 @@ public class StoiximanParser implements Parser {
         css path which contains [data-type='H2HT'] or [data-type='HTOH_0'] is for sports
         that has 2 different results (1, 2) like tennis, mma, basketball, ...
         */
-
         // home and away win
         String cssPathFor1X2 = " [data-type='MRES'] .ma.f.a39, [data-type='MR12'] .ma.f.a39, " +
                                " [data-type='H2HT'] .ma.f.a39, [data-type='HTOH_0'] .ma.f.a39";
@@ -520,7 +519,7 @@ public class StoiximanParser implements Parser {
         Element eventAsElement = doc.select(cssPathForEvent).last();
         String eventAsString = eventAsElement.text();
 
-        Sport sportOfEvent = sportRepository.getOneByName(sportName);
+        Sport sportOfEvent = sportRepository.getOneByNameAndBettor(sportName, bettor);
 
         Event event = eventRepository.getOneByNameAndSport(eventAsString, sportOfEvent);
 
@@ -555,10 +554,13 @@ public class StoiximanParser implements Parser {
             // football
             case "Ποδόσφαιρο":
                 fetchFootballBet(doc);
+                break;
             case "Μπάσκετ":
                 fetchBasketballBet(doc);
+                break;
             case "Τένις":
                 fetchTennisBet(doc);
+                break;
         }
 
     }
@@ -575,27 +577,8 @@ public class StoiximanParser implements Parser {
         // draw
         BigDecimal draw;
 
-        // list with over goals variables as String
-        Map<String, BigDecimal> overGoals = new TreeMap<>();
-        overGoals.put("over0_5", null);
-        overGoals.put("over1_5", null);
-        overGoals.put("over2_5", null);
-        overGoals.put("over3_5", null);
-        overGoals.put("over4_5", null);
-        overGoals.put("over5_5", null);
-        overGoals.put("over6_5", null);
-        overGoals.put("over7_5", null);
-
-        // list with under goals variables as String
-        Map<String, BigDecimal> underGoals = new HashMap<>();
-        underGoals.put("under0_5", null);
-        underGoals.put("under1_5", null);
-        underGoals.put("under2_5", null);
-        underGoals.put("under3_5", null);
-        underGoals.put("under4_5", null);
-        underGoals.put("under5_5", null);
-        underGoals.put("under6_5", null);
-        underGoals.put("under7_5", null);
+        // under/over (under 0.5, over 0.5, ...)
+        BigDecimal underOverOdd = null;
 
         // GG/NG
         BigDecimal goalGoal = null;
@@ -668,56 +651,62 @@ public class StoiximanParser implements Parser {
 
             // the odd of the bet
             // Eg: 2.5
-            String odd = goalUnderOverAsElement.get(i).text();
+            String oddAsString = goalUnderOverAsElement.get(i).text();
 
-            /*
-            format the label to FootballBet object template
-            Example:
-            StoiximanParser label format: Over 1.5
-            FootballBet label format: over1_5
-            */
-            // lowercase the first letter
-            // Over 1.5 -> over 1.5
-            label = label.toLowerCase();
+            // convert odd to BigDecimal
+            underOverOdd = new BigDecimal(oddAsString);
 
-            // remove all blank characters. trims the word and removes blank characters between the words
-            // over 1.5 -> over1.5
-            label = label.replaceAll("\\s+","");
-
-            // replace dot (.) with underscore (_)
-            // over1.5 -> over1_5
-            label = label.replace(".", "_");
-
-            // label is now formatted in FootballBet template
-            // System.out.println("formatted label: "+label);
-
-            // store odd and label to the appropriate variable (depending on the label)
-            // Eg label = over1_5, odd = 2,5
-            // set over1_5 = 2,5 (convert the odd from String to BigDecimal)
-            for (Map.Entry<String, BigDecimal> overMap: overGoals.entrySet()) {
-
-                String overLabel = overMap.getKey();
-
-                if (label.equals(overLabel)) {
-
-                    BigDecimal overOdd = new BigDecimal(odd);
-                    overMap.setValue(overOdd);
-
+            // set the value to the appropriate variable depending on label
+            // eg: if label="Over 1.5" and odd=2,5 then execute -> footballBet.setOver1_5(odd);
+            switch (label) {
+                case ("Over 0.5"):
+                    footballBet.setOver0_5(underOverOdd);
                     break;
-                }
-            }
-
-            for (Map.Entry<String, BigDecimal> underMap: underGoals.entrySet()) {
-
-                String underLabel = underMap.getKey();
-
-                if (label.equals(underLabel)) {
-
-                    BigDecimal underOdd = new BigDecimal(odd);
-                    underMap.setValue(underOdd);
-
+                case ("Over 1.5"):
+                    footballBet.setOver1_5(underOverOdd);
                     break;
-                }
+                case ("Over 2.5"):
+                    footballBet.setOver2_5(underOverOdd);
+                    break;
+                case ("Over 3.5"):
+                    footballBet.setOver3_5(underOverOdd);
+                    break;
+                case ("Over 4.5"):
+                    footballBet.setOver4_5(underOverOdd);
+                    break;
+                case ("Over 5.5"):
+                    footballBet.setOver5_5(underOverOdd);
+                    break;
+                case ("Over 6.5"):
+                    footballBet.setOver6_5(underOverOdd);
+                    break;
+                case ("Over 7.5"):
+                    footballBet.setOver7_5(underOverOdd);
+                    break;
+                case ("Under 0.5"):
+                    footballBet.setUnder0_5(underOverOdd);
+                    break;
+                case ("Under 1.5"):
+                    footballBet.setUnder1_5(underOverOdd);
+                    break;
+                case ("Under 2.5"):
+                    footballBet.setUnder2_5(underOverOdd);
+                    break;
+                case ("Under 3.5"):
+                    footballBet.setUnder3_5(underOverOdd);
+                    break;
+                case ("Under 4.5"):
+                    footballBet.setUnder4_5(underOverOdd);
+                    break;
+                case ("Under 5.5"):
+                    footballBet.setUnder5_5(underOverOdd);
+                    break;
+                case ("Under 6.5"):
+                    footballBet.setUnder6_5(underOverOdd);
+                    break;
+                case ("Under 7.5"):
+                    footballBet.setUnder7_5(underOverOdd);
+                    break;
             }
         }
 
@@ -730,106 +719,67 @@ public class StoiximanParser implements Parser {
 
         for (int i=0; i<goalUnderOverExtraAsElement.size(); i++) {
 
+            // the label of the bet
+            // Eg: Over 1.5
             String label = goalUnderOverLabelExtraAsElement.get(i).text();
-            String odd = goalUnderOverExtraAsElement.get(i).text();
 
-            label = label.toLowerCase();
+            // the odd of the bet
+            // Eg: 2.5
+            String oddAsString = goalUnderOverExtraAsElement.get(i).text();
 
-            label = label.replaceAll("\\s+","");
+            // convert odd to BigDecimal
+            underOverOdd = new BigDecimal(oddAsString);
 
-            label = label.replace(".", "_");
-
-            // System.out.println("formatted label (extra): "+label);
-
-            for (Map.Entry<String, BigDecimal> overMap: overGoals.entrySet()) {
-
-                String overLabel = overMap.getKey();
-
-                if (label.equals(overLabel)) {
-
-                    BigDecimal overOdd = new BigDecimal(odd);
-                    overMap.setValue(overOdd);
-
+            // set the value to the appropriate variable depending on label
+            // eg: if label="Over 1.5" and odd=2,5 then execute -> footballBet.setOver1_5(odd);
+            switch (label) {
+                case ("Over 0.5"):
+                    footballBet.setOver0_5(underOverOdd);
                     break;
-                }
-            }
-
-            for (Map.Entry<String, BigDecimal> underMap: underGoals.entrySet()) {
-
-                String underLabel = underMap.getKey();
-
-                if (label.equals(underLabel)) {
-
-                    BigDecimal underOdd = new BigDecimal(odd);
-                    underMap.setValue(underOdd);
-
+                case ("Over 1.5"):
+                    footballBet.setOver1_5(underOverOdd);
                     break;
-                }
-            }
-        }
-
-        for (Map.Entry<String, BigDecimal> overMap: overGoals.entrySet()) {
-
-            String addTo = overMap.getKey();
-            BigDecimal oddToAdd = overMap.getValue();
-
-            switch (addTo) {
-                case ("over0_5"):
-                    footballBet.setOver0_5(oddToAdd);
+                case ("Over 2.5"):
+                    footballBet.setOver2_5(underOverOdd);
                     break;
-                case ("over1_5"):
-                    footballBet.setOver1_5(oddToAdd);
+                case ("Over 3.5"):
+                    footballBet.setOver3_5(underOverOdd);
                     break;
-                case ("over2_5"):
-                    footballBet.setOver2_5(oddToAdd);
+                case ("Over 4.5"):
+                    footballBet.setOver4_5(underOverOdd);
                     break;
-                case ("over3_5"):
-                    footballBet.setOver3_5(oddToAdd);
+                case ("Over 5.5"):
+                    footballBet.setOver5_5(underOverOdd);
                     break;
-                case ("over4_5"):
-                    footballBet.setOver4_5(oddToAdd);
+                case ("Over 6.5"):
+                    footballBet.setOver6_5(underOverOdd);
                     break;
-                case ("over5_5"):
-                    footballBet.setOver5_5(oddToAdd);
+                case ("Over 7.5"):
+                    footballBet.setOver7_5(underOverOdd);
                     break;
-                case ("over6_5"):
-                    footballBet.setOver6_5(oddToAdd);
+                case ("Under 0.5"):
+                    footballBet.setUnder0_5(underOverOdd);
                     break;
-                case ("over7_5"):
-                    footballBet.setOver7_5(oddToAdd);
+                case ("Under 1.5"):
+                    footballBet.setUnder1_5(underOverOdd);
                     break;
-            }
-        }
-
-        for (Map.Entry<String, BigDecimal> underMap: underGoals.entrySet()) {
-
-            String addTo = underMap.getKey();
-            BigDecimal oddToAdd = underMap.getValue();
-
-            switch (addTo) {
-                case ("under0_5"):
-                    footballBet.setUnder0_5(oddToAdd);
+                case ("Under 2.5"):
+                    footballBet.setUnder2_5(underOverOdd);
                     break;
-                case ("under1_5"):
-                    footballBet.setUnder1_5(oddToAdd);
+                case ("Under 3.5"):
+                    footballBet.setUnder3_5(underOverOdd);
                     break;
-                case ("under2_5"):
-                    footballBet.setUnder2_5(oddToAdd);
+                case ("Under 4.5"):
+                    footballBet.setUnder4_5(underOverOdd);
                     break;
-                case ("under3_5"):
-                    footballBet.setUnder3_5(oddToAdd);
+                case ("Under 5.5"):
+                    footballBet.setUnder5_5(underOverOdd);
                     break;
-                case ("under4_5"):
-                    footballBet.setUnder4_5(oddToAdd);
+                case ("Under 6.5"):
+                    footballBet.setUnder6_5(underOverOdd);
                     break;
-                case ("under5_5"):
-                    footballBet.setUnder5_5(oddToAdd);
-                    break;
-                case ("under6_5"):
-                    footballBet.setUnder6_5(oddToAdd);
-                    break;
-                case ("under7_5"):
-                    footballBet.setUnder7_5(oddToAdd);
+                case ("Under 7.5"):
+                    footballBet.setUnder7_5(underOverOdd);
                     break;
             }
         }
@@ -843,7 +793,7 @@ public class StoiximanParser implements Parser {
         String noGoalAsString;
 
         // if the double bet elements exists in the page
-        if(goalGoalNoGoalAsElement.size() > 0) {
+        if (goalGoalNoGoalAsElement.size() > 0) {
 
             // goal goal odd is the first element (i=0)
             goalGoalAsString = doc.select(cssPathForGoalGoal).get(0).text();
@@ -1174,11 +1124,11 @@ public class StoiximanParser implements Parser {
     }
 
     @Override
-    public void saveEntity(Object theObject, JpaRepository theRepository) {
+    public void saveEntity(Object entity, JpaRepository repository) {
 
         // save the object (bettor or sport or event or ...)
         try {
-            theRepository.save(theObject);
+            repository.save(entity);
         } catch (Exception exc) {
             exc.printStackTrace();
         }
@@ -1309,7 +1259,6 @@ public class StoiximanParser implements Parser {
         this.sportName = sportName;
     }
 
-    // toString
     @Override
     public String toString() {
         return "StoiximanParser{" +

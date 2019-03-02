@@ -1,13 +1,10 @@
 package com.kavou.bettingCrawler.web.controller;
 
-import com.kavou.bettingCrawler.web.dao.BasketballBetRepository;
 import com.kavou.bettingCrawler.web.entity.Bet;
 import com.kavou.bettingCrawler.web.entity.Game;
 import com.kavou.bettingCrawler.web.entity.Sport;
-import com.kavou.bettingCrawler.web.service.BasketballBetService;
-import com.kavou.bettingCrawler.web.service.FootballBetService;
+import com.kavou.bettingCrawler.web.service.BetService;
 import com.kavou.bettingCrawler.web.service.GameService;
-import com.kavou.bettingCrawler.web.service.TennisBetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,13 +22,13 @@ public class BetController {
     private GameService gameService;
 
     @Autowired
-    private FootballBetService footballBetService;
+    private BetService footballBetService;
 
     @Autowired
-    private BasketballBetService basketballBetService;
+    private BetService basketballBetService;
 
     @Autowired
-    private TennisBetService tennisBetService;
+    private BetService tennisBetService;
 
     @GetMapping("/bets")
     private String getBetsByCategory(@RequestParam("gameId") int gameId, Model model, Pageable page) {

@@ -4,12 +4,14 @@ import com.kavou.bettingCrawler.web.dao.FootballBetRepository;
 import com.kavou.bettingCrawler.web.entity.Bet;
 import com.kavou.bettingCrawler.web.entity.Game;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FootballBetServiceImpl implements FootballBetService {
+@Primary
+public class FootballBetServiceImpl implements BetService {
 
     @Autowired
     FootballBetRepository footballBetRepository;

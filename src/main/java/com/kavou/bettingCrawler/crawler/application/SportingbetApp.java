@@ -1,7 +1,6 @@
 package com.kavou.bettingCrawler.crawler.application;
 
-import com.kavou.bettingCrawler.crawler.bettor.StoiximanParser;
-
+import com.kavou.bettingCrawler.crawler.bettor.SportingbetParser;
 import me.tongfei.progressbar.ProgressBar;
 import org.jsoup.nodes.Document;
 import org.springframework.boot.SpringApplication;
@@ -16,10 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-// @SpringBootApplication
-// @ComponentScan("com.kavou")
-// @EnableJpaRepositories("com.kavou")
-public class StoiximanApp {
+@SpringBootApplication
+@ComponentScan("com.kavou")
+@EnableJpaRepositories("com.kavou")
+public class SportingbetApp {
 
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
@@ -33,24 +32,24 @@ public class StoiximanApp {
 
     public static void main(String[] args) {
 
-        ApplicationContext context = SpringApplication.run(StoiximanApp.class, args);
-        // get the bean for StoiximanParser
-        StoiximanParser stoiximanParser = context.getBean(StoiximanParser.class);
+        ApplicationContext context = SpringApplication.run(SportingbetApp.class, args);
+        // get the bean for SportingbetParser
+        SportingbetParser sportingbetParser = context.getBean(SportingbetParser.class);
 
         // give user the choice to crawl for data or stay in server mode
 
-        System.out.println(ANSI_RED+"\nApplication is now running in server mode ... Press 1 to start extracting data from the web. "+ANSI_RESET);
-        boolean crawlForData;
-        Scanner in = new Scanner(System.in);
-        int choice  = in.nextInt();
+        // System.out.println(ANSI_RED+"\nApplication is now running in server mode ... Press 1 to start extracting data from the web. "+ANSI_RESET);
+        // boolean crawlForData;
+        // Scanner in = new Scanner(System.in);
+        // int choice  = in.nextInt();
+        //
+        // if (choice == 1) { // Crawl for data
+        //     crawlForData = true;
+        // } else { // Stay on server mode
+        //     crawlForData = false;
+        // }
 
-        if (choice == 1) { // Crawl for data
-            crawlForData = true;
-        } else { // Stay on server mode
-            crawlForData = false;
-        }
-
-        if (crawlForData) {
+        if (true) {
 
             // crawling started
             float startTime = System.nanoTime();
@@ -65,45 +64,46 @@ public class StoiximanApp {
             System.out.println(ANSI_GREEN + "\nCRAWLING STARTED" + ANSI_RESET);
 
             // URL of index page
-            String indexPageUrl = stoiximanParser.getIndexPageUrl();
+            String indexPageUrl = sportingbetParser.getIndexPageUrl();
             // connect and fetch the index page
-            Document indexDocument = stoiximanParser.connectAndFetchPage(indexPageUrl);
+            Document indexDocument = sportingbetParser.connectAndFetchPage(indexPageUrl);
 
             // get bettor data
             try {
-                stoiximanParser.fetchBettorData(indexDocument);
+                sportingbetParser.fetchBettorData(indexDocument);
             } catch (Exception e) {
                 exceptionMessages.add(e.getMessage());
             }
 
             // get sport data and create the sport links list
             try {
-                stoiximanParser.fetchSportData(indexDocument);
+                sportingbetParser.fetchSportData(indexDocument);
             } catch (Exception e) {
                 exceptionMessages.add(e.getMessage());
             }
             // URLs of sport links
-            List<String> sportLinks = stoiximanParser.getSportLinks();
+            List<String> sportLinks = sportingbetParser.getSportLinks();
 
             // visit every sport link
             for (String sportLink : sportLinks) {
 
-                Document sportDocument = stoiximanParser.connectAndFetchPage(sportLink);
+                Document sportDocument = sportingbetParser.connectAndFetchPage(sportLink);
 
                 // create the event links list
                 try {
-                    stoiximanParser.fetchEventData(sportDocument);
+                    sportingbetParser.fetchEventData(sportDocument);
                 } catch (Exception e) {
+                    e.printStackTrace();
                     pagesNotLoaded.add(sportLink);
                     exceptionMessages.add(e.getMessage());
                 }
 
                 // URLs of event links
-                List<String> eventLinks = stoiximanParser.getEventLinks();
+                List<String> eventLinks = sportingbetParser.getEventLinks();
 
                 // progress bar
                 int max = eventLinks.size();
-                try (ProgressBar bar = new ProgressBar("Fetching data for " + stoiximanParser.getSportName(), max)) {
+                try (ProgressBar bar = new ProgressBar("Fetching data for " + sportingbetParser.getSportName(), max)) {
 
                     // visit every event
                     for (String eventLink : eventLinks) {
@@ -112,11 +112,11 @@ public class StoiximanApp {
 
                         // System.out.println("-----------> Event link: " + eventLink);
 
-                        Document eventDocument = stoiximanParser.connectAndFetchPage(eventLink);
+                        Document eventDocument = sportingbetParser.connectAndFetchPage(eventLink);
 
-                        // create the game data
+                        // create the game links list
                         try {
-                            stoiximanParser.fetchGameData(eventDocument);
+                            sportingbetParser.fetchGameLinks(eventDocument);
                         } catch (Exception e) {
                             // e.printStackTrace();
                             pagesNotLoaded.add(eventLink);
@@ -124,20 +124,29 @@ public class StoiximanApp {
                         }
 
                         // URLs of game links
-                        List<String> gameLinks = stoiximanParser.getGameLinks();
+                        List<String> gameLinks = sportingbetParser.getGameLinks();
 
                         // visit every match
                         for (String gameLink : gameLinks) {
 
                             // System.out.println("-----------> Game link: "+gameLink);
 
-                            Document gameDocument = stoiximanParser.connectAndFetchPage(gameLink);
+                            Document gameDocument = sportingbetParser.connectAndFetchPage(gameLink);
 
-                            // fetch bets data
+                            // fetch match data
                             try {
-                                stoiximanParser.fetchBetData(gameDocument);
+                                sportingbetParser.fetchGameData(gameDocument);
                             } catch (Exception e) {
-                                // e.printStackTrace();
+                                e.printStackTrace();
+                                pagesNotLoaded.add(gameLink);
+                                exceptionMessages.add(e.getMessage());
+                            }
+
+                            // // fetch bets data
+                            try {
+                                sportingbetParser.fetchBetData(gameDocument);
+                            } catch (Exception e) {
+                                e.printStackTrace();
                                 pagesNotLoaded.add(gameLink);
                                 exceptionMessages.add(e.getMessage());
                             }

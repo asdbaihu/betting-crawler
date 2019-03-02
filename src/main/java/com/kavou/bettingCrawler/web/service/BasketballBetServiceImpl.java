@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class BasketballBetServiceImpl implements BasketballBetService {
+public class BasketballBetServiceImpl implements BetService {
 
     @Autowired
     BasketballBetRepository basketballBetRepository;
