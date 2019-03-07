@@ -3,7 +3,6 @@ package com.kavou.bettingCrawler.crawler.bettor;
 import com.kavou.bettingCrawler.crawler.interfaces.Parser;
 import com.kavou.bettingCrawler.web.dao.*;
 import com.kavou.bettingCrawler.web.entity.*;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -48,9 +46,6 @@ public class StoiximanParser implements Parser {
     private List<String> eventLinks = new ArrayList<>();
     private List<String> gameLinks = new ArrayList<>();
 
-    // Jsoup connection parameter
-    private static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36";
-
     // Dependency injections
     @Autowired
     private BettorRepository bettorRepository;
@@ -66,25 +61,6 @@ public class StoiximanParser implements Parser {
 
     @Autowired
     private BetRepository betRepository;
-
-    @Override
-    // connect ang fetch the html page from the Url given in the constructor
-    // stores the html page as a Document and returns it
-    public Document connectAndFetchPage(String Url) {
-
-        Document document = null;
-
-        try {
-            // connect and store the html page to "document"
-            document = Jsoup.connect(Url)
-                            .userAgent(USER_AGENT)
-                            .get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return document;
-    }
 
     @Override
     public void fetchBettorData(Document doc) {

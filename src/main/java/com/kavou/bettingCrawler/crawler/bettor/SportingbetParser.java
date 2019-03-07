@@ -53,9 +53,6 @@ public class SportingbetParser implements Parser {
     private List<String> eventLinks = new ArrayList<>();
     private List<String> gameLinks = new ArrayList<>();
 
-    // Jsoup connection parameter
-    private static final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36";
-
     // Dependency injections
     @Autowired
     private BettorRepository bettorRepository;
@@ -71,23 +68,6 @@ public class SportingbetParser implements Parser {
 
     @Autowired
     private BetRepository betRepository;
-
-    @Override
-    public Document connectAndFetchPage(String Url) {
-
-        Document document = null;
-
-        try {
-            // connect and store the html page to "document"
-            document = Jsoup.connect(Url)
-                    .userAgent(USER_AGENT)
-                    .get();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return document;
-    }
 
     @Override
     public void fetchBettorData(Document doc) {
