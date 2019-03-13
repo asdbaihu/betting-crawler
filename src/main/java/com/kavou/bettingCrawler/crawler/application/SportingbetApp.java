@@ -37,17 +37,16 @@ public class SportingbetApp {
         SportingbetParser sportingbetParser = context.getBean(SportingbetParser.class);
 
         // give user the choice to crawl for data or stay in server mode
+        System.out.println(ANSI_RED+"\nApplication is now running in server mode ... Press 1 to start extracting data from the web. "+ANSI_RESET);
+        boolean crawlForData;
+        Scanner in = new Scanner(System.in);
+        int choice  = in.nextInt();
 
-        // System.out.println(ANSI_RED+"\nApplication is now running in server mode ... Press 1 to start extracting data from the web. "+ANSI_RESET);
-        // boolean crawlForData;
-        // Scanner in = new Scanner(System.in);
-        // int choice  = in.nextInt();
-        //
-        // if (choice == 1) { // Crawl for data
-        //     crawlForData = true;
-        // } else { // Stay on server mode
-        //     crawlForData = false;
-        // }
+        if (choice == 1) { // Crawl for data
+            crawlForData = true;
+        } else { // Stay on server mode
+            crawlForData = false;
+        }
 
         if (true) {
 
@@ -72,6 +71,7 @@ public class SportingbetApp {
             try {
                 sportingbetParser.fetchBettorData(indexDocument);
             } catch (Exception e) {
+                e.printStackTrace();
                 exceptionMessages.add(e.getMessage());
             }
 
@@ -79,6 +79,7 @@ public class SportingbetApp {
             try {
                 sportingbetParser.fetchSportData(indexDocument);
             } catch (Exception e) {
+                e.printStackTrace();
                 exceptionMessages.add(e.getMessage());
             }
             // URLs of sport links
@@ -118,7 +119,7 @@ public class SportingbetApp {
                         try {
                             sportingbetParser.fetchGameLinks(eventDocument);
                         } catch (Exception e) {
-                            // e.printStackTrace();
+                            e.printStackTrace();
                             pagesNotLoaded.add(eventLink);
                             exceptionMessages.add(e.getMessage());
                         }

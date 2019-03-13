@@ -10,9 +10,9 @@ public interface Parser {
 
 
     // Jsoup connection parameter
-    String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36";
+    final String USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.81 Safari/537.36";
 
-    // default method, no need to implement this method
+    // default method, no need to implement this method when using the interface
     // connect and store the html webpage to a document variable
     default Document connectAndFetchPage(String Url) {
 

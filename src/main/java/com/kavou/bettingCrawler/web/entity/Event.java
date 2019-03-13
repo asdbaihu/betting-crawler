@@ -34,6 +34,11 @@ public class Event {
         this.name = name;
     }
 
+    public Event(String name, Sport sport) {
+        this.name = name;
+        this.sport = sport;
+    }
+
     public Event() {
     }
 
@@ -74,6 +79,21 @@ public class Event {
         return "Event{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", sport=" + sport +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Event event = (Event) o;
+        return name.equals(event.getName()) && sport.equals(event.getSport());
     }
 }

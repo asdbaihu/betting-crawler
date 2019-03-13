@@ -3,7 +3,6 @@ package com.kavou.bettingCrawler.crawler.bettor;
 import com.kavou.bettingCrawler.crawler.interfaces.Parser;
 import com.kavou.bettingCrawler.web.dao.*;
 import com.kavou.bettingCrawler.web.entity.*;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -100,42 +98,30 @@ public class SportingbetParser implements Parser {
         String cssPathForSportNames = ".sports-links__link.sports-links__link--all-sports span.sports-links__name";
         Elements sportNamesAsElement = doc.select(cssPathForSportNames);
 
-        // bettor object to check if associated with the sport
-        Bettor bettorToCheck = bettor;
+        // sport name of the website. We need them to create the website sports list
+        String sportNameOfWebsite;
+        // list with sports taken from website
+        List<Sport> websiteSports = new ArrayList<>();
 
-        // list with new sports
-        // new sport is a sport that is not contained in the database (associated with "bettorToCheck")
-        List<Sport> newSports = new ArrayList<>();
-
-        // new sport
-        Sport newSport;
-
-        // sport name to check
-        String sportNameToCheck;
+        // lists with sports taken from database
+        List<Sport> databaseSports = sportRepository.findAllByBettor(bettor);
 
         for (int i=0; i<sportLinksAsElement.size(); i++) {
 
             // name of sport
-            sportNameToCheck = sportNamesAsElement.get(i).text();
+            sportNameOfWebsite = sportNamesAsElement.get(i).text();
 
-            // check (by sport name and bettor) if sport exists in database
-            boolean sportExists = sportRepository.existsByNameAndBettor(sportNameToCheck, bettorToCheck);
+            // create the sport
+            Sport tempSport = new Sport(sportNameOfWebsite, bettor);
 
-            // if sport does not exists in database
-            if (!sportExists) {
-                // create it
-                newSport = new Sport(sportNameToCheck);
-                // associate it with bettor
-                newSport.setBettor(bettorToCheck);
-                // add the sport to the new sports list
-                newSports.add(newSport);
-            }
+            // sports of website
+            websiteSports.add(tempSport);
 
             // link of sport
             String sportLink = sportLinksAsElement.get(i).absUrl("href");
 
             // System.out.println("Sport link: "+sportLink);
-            // System.out.println("Sport name: "+sportNameToCheck);
+            // System.out.println("Sport name: "+sportNameOfWebsite);
 
             /*
             ONLY
@@ -153,15 +139,27 @@ public class SportingbetParser implements Parser {
             }
         }
 
-        // if new sports exist
+        // keep only the sports that are not in the database
+        // eg:
+        // database has the following sports:
+        // 1) football, 2) basketball, 3) volleyball
+        // website sports are:
+        // 1) football, 2) basketball, 3) tennis, 4) formula 1
+        // we keep only the "new" sports (tennis, formula 1)
+        websiteSports.removeAll(databaseSports);
+
+        // list with newSports
+        List<Sport> newSports = websiteSports;
+
+        // if new sports exist (list has at least one element)
         if (!newSports.isEmpty()) {
 
             // associate the new sports with the bettor
-            bettorToCheck.setSports(newSports);
+            bettor.setSports(newSports);
 
             // update the bettor
             // new sports will also be saved
-            saveEntity(bettorToCheck, betRepository);
+            saveEntity(bettor, betRepository);
         }
 
     }
@@ -171,9 +169,6 @@ public class SportingbetParser implements Parser {
 
         // clear the list. The list must contain only the event links of the current sport
         eventLinks.clear();
-
-        // get event links and names
-
 
         // get event links and names
 
@@ -198,21 +193,19 @@ public class SportingbetParser implements Parser {
         String cssPathForSportName = "#nav-sport-name.sports-links__text";
         Element sportNameAsElement = doc.select(cssPathForSportName).first();
 
-        // name of sport to check if associated with the event
+        // name of sport to check if associated with the events
         sportName = sportNameAsElement.text();
 
         // sport object to check if associated with the event
-        Sport sportToCheck = sportRepository.getOneByNameAndBettor(sportName, bettor);
+        Sport sport = sportRepository.getOneByNameAndBettor(sportName, bettor);
 
-        // list with new events
-        // new event is an event that is not contained in the database (associated with "sportToCheck")
-        List<Event> newEvents = new ArrayList<>();
+        // event name of the website. We need them to create the website events list
+        String eventNameOfWebsite;
+        // list with events taken from website
+        List<Event> websiteEvents = new ArrayList<>();
 
-        // new event
-        Event newEvent;
-
-        // event name to check
-        String eventName;
+        // lists with events taken from database
+        List<Event> databaseEvents = eventRepository.findAllBySport(sport);
 
         // loop through regions
         for (int j=0; j<regionsAsElement.size(); j++) {
@@ -285,22 +278,15 @@ public class SportingbetParser implements Parser {
 
                     // create the formatted name (event name)
                     // Αγγλία - Premier League, Αγγλία - Championship, Αγγλία - EFL Cup, ...
-                    eventName = regionHead + " - " + regionBodyName;
+                    eventNameOfWebsite = regionHead + " - " + regionBodyName;
 
-                    // System.out.println("Event name: "+eventName);
+                    // System.out.println("Event name: "+eventNameOfWebsite);
 
-                    // check (by event name and sport) if event exists in database
-                    boolean eventExists = eventRepository.existsByNameAndSport(eventName, sportToCheck);
+                    // create the event
+                    Event tempEvent = new Event(eventNameOfWebsite, sport);
 
-                    // if event does not exists in database
-                    if (!eventExists) {
-                        // create it
-                        newEvent = new Event(eventName);
-                        // associate it with the sport
-                        newEvent.setSport(sportToCheck);
-                        // add the event to the new events list
-                        newEvents.add(newEvent);
-                    }
+                    // events of website
+                    websiteEvents.add(tempEvent);
                 }
             }
 
@@ -356,21 +342,20 @@ public class SportingbetParser implements Parser {
 
             }
 
-            // if (eventLinks.size() == 8) {
-            //     break;
-            // }
+            if (eventLinks.size() == 8) {
+                break;
+            }
 
         }
 
-        // if new events exist
+        websiteEvents.removeAll(databaseEvents);
+
+        List<Event> newEvents = websiteEvents;
+
         if (!newEvents.isEmpty()) {
 
-            // associate the new events with the sport
-            sportToCheck.setEvents(newEvents);
-
-            // update the sport
-            // new events will also be saved
-            saveEntity(sportToCheck, sportRepository);
+            sport.setEvents(newEvents);
+            saveEntity(sport, sportRepository);
         }
 
     }
@@ -402,7 +387,6 @@ public class SportingbetParser implements Parser {
             // }
 
         }
-
     }
 
     @Override

@@ -28,9 +28,9 @@ public class Sport {
         this.name = name;
     }
 
-    public Sport(int id, String name) {
-        this.id = id;
+    public Sport(String name, Bettor bettor) {
         this.name = name;
+        this.bettor = bettor;
     }
 
     public Sport() {
@@ -73,6 +73,23 @@ public class Sport {
         return "Sport{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", bettor=" + bettor +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Sport sport = (Sport) o;
+        return name.equals(sport.getName()) && bettor.equals(sport.getBettor());
+    }
+
+
 }
